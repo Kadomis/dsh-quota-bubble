@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Quota bubble">
+  <defs>
+    <linearGradient id="qb-halo" x1="4" y1="4" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4f8cff"/>
+      <stop offset="0.55" stop-color="#8a5bff"/>
+      <stop offset="1" stop-color="#c15bff"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="18" fill="url(#qb-halo)" opacity="0.16"/>
+  <rect x="12" y="12" width="40" height="40" rx="12" fill="#131010"/>
+  <path d="M22 41a10 10 0 0 1 20 0" fill="none" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round"/>
+  <path d="M32 41 L37 34" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/>
+  <circle cx="32" cy="41" r="2.6" fill="#FFFFFF"/>
+  <circle cx="43" cy="22" r="2.2" fill="url(#qb-halo)"/>
+</svg>

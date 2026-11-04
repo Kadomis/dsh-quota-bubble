@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Quota Bubble",
+    "description": "Floating bubble on the right of the panel showing the live remaining quota for the provider behind the running model."
+  }
+}

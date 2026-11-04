@@ -1,0 +1,64 @@
+{
+  "name": "dsh-quota-bubble",
+  "version": "0.1.0",
+  "description": "Live provider quota and usage bubble for the DeepSeek Harness.",
+  "author": "Syzygy",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Kadomis/dsh-quota-bubble.git"
+  },
+  "homepage": "https://github.com/Kadomis/dsh-quota-bubble#readme",
+  "bugs": {
+    "url": "https://github.com/Kadomis/dsh-quota-bubble/issues"
+  },
+  "license": "MIT",
+  "type": "module",
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "plugin",
+    "quota",
+    "usage",
+    "opencode-go",
+    "bundle"
+  ],
+  "engines": {
+    "dsh": ">=0.2.1-rc.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": "./host2.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "README.md",
+    "LICENSE",
+    "host2.js",
+    "CONTRIBUTING.md",
+    "tokens.json",
+    "CHANGELOG.md",
+    "docs/token-governance.md",
+    "scripts/check-tokens.mjs"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-conversation"
+      ]
+    }
+  }
+}
