@@ -21,7 +21,32 @@ const CATALOG_TTL_MS = 10 * 60_000
 const MODELS_TTL_MS = 10 * 60_000
 const REQUEST_TIMEOUT_MS = 12_000
 const USER_AGENT = 'dsh-quota-bubble/0.5.0'
-const REVISION = 2
+const REVISION = 4
+
+/**
+ * Antigravity quota is not published by an OpenAI-shaped usage endpoint. It is
+ * owned by the dsh-agy-link plugin, which holds the Google OAuth session and
+ * keeps one counter per account and per model family. That plugin already
+ * serves the counter on its own same-origin route, so the bubble reads it from
+ * there instead of taking a second copy of the credential.
+ */
+const AGY_POOL_PATH = '/plugins/agy-link/pool'
+
+/**
+ * What the card says when the Antigravity counters are not readable. These
+ * are "no live number right now" states rather than failures: the sibling
+ * plugin may not be serving the pool at all, and the running model may not
+ * draw down a counter this pool publishes.
+ */
+const AGY_NOTES = {
+  'http-404': 'Install the dsh-agy-link plugin to read Antigravity quota.',
+  'no-model-family': 'Antigravity does not publish a quota counter for this model.',
+  'no-account': 'No Antigravity account is configured yet.',
+  'no-eligible-account': 'No Antigravity account can serve this model right now.',
+  'no-quota': 'The Antigravity account that would serve this model has no published counter yet.',
+  'no-origin': 'The Antigravity quota endpoint is not reachable yet.',
+  'tls-untrusted': 'The host certificate is not trusted, so the Antigravity quota cannot be read.',
+}
 
 const BRAND_LABELS = {
   anthropic: 'Anthropic',
@@ -29,6 +54,7 @@ const BRAND_LABELS = {
   'openai-codex': 'OpenAI Codex',
   google: 'Google',
   'google-vertex': 'Google Vertex',
+  antigravity: 'Antigravity',
   deepseek: 'DeepSeek',
   'deepseek-official': 'DeepSeek',
   'deepseek-account': 'DeepSeek Account',
@@ -121,6 +147,46 @@ const STRATEGIES = {
     credentialRefs: ['MOONSHOT_API_KEY'],
     currency: 'CNY',
   },
+  antigravity: {
+    kind: 'agy-pool',
+    poolPath: AGY_POOL_PATH,
+  },
+  groq: {
+    kind: 'models-ping',
+    usageEndpoint: 'https://api.groq.com/openai/v1/models',
+    credentialRefs: ['GROQ_API_KEY'],
+    source: 'groq',
+  },
+  together: {
+    kind: 'models-ping',
+    usageEndpoint: 'https://api.together.xyz/v1/models',
+    credentialRefs: ['TOGETHER_API_KEY', 'TOGETHERAI_API_KEY'],
+    source: 'together',
+  },
+  togetherai: {
+    kind: 'models-ping',
+    usageEndpoint: 'https://api.together.xyz/v1/models',
+    credentialRefs: ['TOGETHER_API_KEY', 'TOGETHERAI_API_KEY'],
+    source: 'together',
+  },
+  mistral: {
+    kind: 'models-ping',
+    usageEndpoint: 'https://api.mistral.ai/v1/models',
+    credentialRefs: ['MISTRAL_API_KEY'],
+    source: 'mistral',
+  },
+  openai: {
+    kind: 'models-ping',
+    usageEndpoint: 'https://api.openai.com/v1/models',
+    credentialRefs: ['OPENAI_API_KEY'],
+    source: 'openai',
+  },
+  cerebras: {
+    kind: 'models-ping',
+    usageEndpoint: 'https://api.cerebras.ai/v1/models',
+    credentialRefs: ['CEREBRAS_API_KEY'],
+    source: 'cerebras',
+  },
 }
 
 function words(text) {
@@ -155,12 +221,233 @@ function numberOrUndefined(value) {
   return Number.isFinite(parsed) ? parsed : undefined
 }
 
+/**
+ * Whether a fetch failed because the host's own certificate is not trusted.
+ *
+ * The bubble reaches the web server over loopback, so it is talking to the
+ * process it is running inside. A host configured with a self-signed
+ * certificate would otherwise look like an unreachable endpoint.
+ */
+function tlsUntrusted(error) {
+  const code = error?.cause?.code
+  return code === 'DEPTH_ZERO_SELF_SIGNED_CERT' || code === 'SELF_SIGNED_CERT_IN_CHAIN'
+}
+
+/**
+ * The Antigravity model slug -> the quota counter family that bills it.
+ *
+ * Mirrors the family rules dsh-agy-link applies when it charges a request, so
+ * the bubble reads the counter the running model actually draws down. Argon
+ * bills against its own weekly pool and its ids look like "gemini-4-argon-*",
+ * so it must be matched before the Gemini prefix.
+ */
+function agyFamilyOf(modelId) {
+  if (typeof modelId !== 'string' || modelId.length === 0) return undefined
+  const id = modelId.toLowerCase()
+  if (id.includes('argon')) return 'argon'
+  if (id.startsWith('claude-') || id.includes('claude')) return 'anthropic'
+  if (id.startsWith('gemini-') || id.startsWith('gemma-') || id.includes('gemini')) return 'google'
+  if (id.startsWith('gpt-') || id.startsWith('openai/') || id.includes('gpt-oss')) return 'openai'
+  return undefined
+}
+
+/**
+ * A remaining fraction (0..1) -> the percent-consumed the card renders.
+ *
+ * dsh-agy-link rounds the share still left to a whole percentage and colours
+ * that rounded number: 20% left or less is low, 50% or less is medium. The
+ * card colours the share it is handed with strict bounds instead, so the
+ * rounded share travels half a point under the whole percentage it stands
+ * for. The number on screen and the band it lands in then match the counters
+ * the sibling plugin shows, for every share a quota can take.
+ */
+function agyUsedPercent(remainingFraction) {
+  const remaining = numberOrUndefined(remainingFraction)
+  if (remaining === undefined) return undefined
+  const shown = Math.round(Math.min(1, Math.max(0, remaining)) * 100)
+  return 100.5 - shown
+}
+
+function isoOrUndefined(value) {
+  return typeof value === 'string' && value.length > 0 ? value : undefined
+}
+
+/**
+ * Account identity for selection. Sign-in, disabling, and family cooldown
+ * determine whether an account can serve; the reported counters are separate.
+ */
+function agyEligible(account, family, now) {
+  if (account === null || typeof account !== 'object') return false
+  if (!account.enabled || account.authRequired) return false
+  const cooldown = account.cooldowns?.[family]
+  if (cooldown !== null && typeof cooldown === 'object') {
+    const until = numberOrUndefined(cooldown.cooldownUntil)
+    if (until !== undefined && until > now) return false
+  }
+  return true
+}
+
+/** Whether the account's reported counters can serve the current request. */
+function agyAccountAvailable(account, family, now) {
+  if (!agyEligible(account, family, now)) return false
+  const quota = account?.quotas?.[family]
+  if (quota === null || typeof quota !== 'object') return false
+  if (typeof quota.remainingFraction === 'number' && quota.remainingFraction <= 0.1) {
+    const reset = Date.parse(isoOrUndefined(quota.resetTime) ?? '')
+    if (Number.isNaN(reset) || reset > now) return false
+  }
+  if (typeof quota.weeklyFraction === 'number' && quota.weeklyFraction <= 0.05) {
+    const reset = Date.parse(isoOrUndefined(quota.weeklyResetTime) ?? '')
+    if (Number.isNaN(reset) || reset > now) return false
+  }
+  return true
+}
+
+/**
+ * Mirrors the account selection used by dsh-agy-link to answer a request.
+ * Sign-in is not enough to promise that the selected account can serve; the
+ * probe checks the returned account's counters separately.
+ */
+function agySelectAccount(pool, family, now) {
+  const accounts = Array.isArray(pool?.accounts) ? pool.accounts : []
+  const candidates = accounts.filter((account) => agyAccountAvailable(account, family, now))
+  if (candidates.length === 0) return undefined
+  if (candidates.length > 1 && pool?.mode === 'round-robin') {
+    let picked = candidates[0]
+    for (const account of candidates) {
+      if ((account?.lastUsedAt ?? 0) < (picked?.lastUsedAt ?? 0)) picked = account
+    }
+    return picked
+  }
+  const pinned = pool?.activeAccountIds?.[family]
+  if (pinned) {
+    const pinnedAccount = candidates.find((account) => account?.id === pinned)
+    if (pinnedAccount !== undefined) return pinnedAccount
+  }
+  return agyOrderByExpiry(accounts, candidates, family, pinned)[0]
+}
+
+/**
+ * "Use it or lose it" rotation order: the account whose weekly cap frees up
+ * soonest first, then the one whose 5-hour window frees up soonest, then pool
+ * order measured cyclically from the family's current account.
+ */
+function agyOrderByExpiry(accounts, candidates, family, fromId) {
+  const now = Date.now()
+  const total = accounts.length
+  const distance = (id) => {
+    const index = accounts.findIndex((account) => account?.id === id)
+    if (index === -1) return Number.MAX_SAFE_INTEGER
+    if (fromId === undefined) return index
+    const start = accounts.findIndex((account) => account?.id === fromId)
+    if (start === -1) return index
+    return (index - start + total) % total
+  }
+  const remaining = (value) => {
+    const at = Date.parse(isoOrUndefined(value) ?? '')
+    return Number.isNaN(at) ? undefined : Math.max(0, at - now)
+  }
+  return candidates.slice().sort((a, b) => {
+    const weeklyA = remaining(a?.quotas?.[family]?.weeklyResetTime)
+    const weeklyB = remaining(b?.quotas?.[family]?.weeklyResetTime)
+    if (weeklyA !== undefined && weeklyB !== undefined) {
+      if (weeklyA !== weeklyB) return weeklyA - weeklyB
+    } else if (weeklyA !== undefined || weeklyB !== undefined) {
+      return weeklyA !== undefined ? -1 : 1
+    }
+    const rollingA = remaining(a?.quotas?.[family]?.resetTime)
+    const rollingB = remaining(b?.quotas?.[family]?.resetTime)
+    if (rollingA !== undefined && rollingB !== undefined) {
+      if (rollingA !== rollingB) return rollingA - rollingB
+    } else if (rollingA !== undefined || rollingB !== undefined) {
+      return rollingA !== undefined ? -1 : 1
+    }
+    const distanceA = distance(a?.id)
+    const distanceB = distance(b?.id)
+    return distanceA !== distanceB ? distanceA - distanceB : 0
+  })
+}
+
+/**
+ * The family's counters as the card's windows. The pool reports the share
+ * still left in each window; the card renders the share consumed.
+ *
+ * Argon bills against one pool of its own, so dsh-agy-link shows a single
+ * number for it and copies the 5-hour reading into the weekly slot. The card
+ * follows: one window, not two bars holding the same figure.
+ */
+function agyWindows(account, family) {
+  const quota = account?.quotas?.[family]
+  if (quota === null || typeof quota !== 'object') return undefined
+  const windows = []
+  if (family === 'argon') {
+    const percent = agyUsedPercent(quota.weeklyFraction ?? quota.remainingFraction)
+    if (percent === undefined) return undefined
+    windows.push({
+      key: 'weekly',
+      label: 'Weekly',
+      percent,
+      status: 'ok',
+      resetsAt: isoOrUndefined(quota.weeklyResetTime ?? quota.resetTime),
+    })
+    return windows
+  }
+  const rolling = agyUsedPercent(quota.remainingFraction)
+  if (rolling !== undefined) {
+    windows.push({ key: 'rolling', label: '5-hour', percent: rolling, status: 'ok', resetsAt: isoOrUndefined(quota.resetTime) })
+  }
+  const weekly = agyUsedPercent(quota.weeklyFraction)
+  if (weekly !== undefined) {
+    windows.push({ key: 'weekly', label: 'Weekly', percent: weekly, status: 'ok', resetsAt: isoOrUndefined(quota.weeklyResetTime) })
+  }
+  return windows.length === 0 ? undefined : windows
+}
+
 export function apply(ctx) {
   ctx.inject(['webServer', 'credentials', 'agentDefaultModel', 'llm'], (inner) => {
-    let cache
+    const cache = new Map()
     let catalogCache
     const modelsCache = new Map()
-    function runningModel() {
+
+    async function resolveSessionModel(sessionId) {
+      if (typeof sessionId !== 'string' || sessionId.length === 0) return undefined
+      try {
+        const sc = ctx.get ? ctx.get('sessionController') : ctx.sessionController
+        if (sc && typeof sc.resolveAgent === 'function') {
+          const agent = await sc.resolveAgent(sessionId)
+          const current = agent?.model?.current?.()
+          if (current && typeof current.provider === 'string' && typeof current.model === 'string') {
+            return {
+              provider: current.provider,
+              model: current.model,
+              reasoningEffort: typeof current.reasoningEffort === 'string' ? current.reasoningEffort : undefined,
+            }
+          }
+        }
+      } catch {}
+      try {
+        const sessions = ctx.get ? ctx.get('sessions') : ctx.sessions
+        const s = sessions?.get?.(sessionId)
+        const cfg = s?.requestHeader?.()?.config
+        if (cfg && typeof cfg.provider === 'string' && typeof cfg.model === 'string') {
+          return {
+            provider: cfg.provider,
+            model: cfg.model,
+            reasoningEffort: typeof cfg.reasoningEffort === 'string' ? cfg.reasoningEffort : undefined,
+          }
+        }
+      } catch {}
+      return undefined
+    }
+
+    function runningModel(override) {
+      if (override && typeof override.provider === 'string' && typeof override.model === 'string') {
+        return {
+          provider: override.provider,
+          model: override.model,
+          reasoningEffort: typeof override.reasoningEffort === 'string' ? override.reasoningEffort : undefined,
+        }
+      }
       try {
         const selection = inner.agentDefaultModel.currentSelection()
         if (selection === undefined || selection === null) return undefined
@@ -194,6 +481,10 @@ export function apply(ctx) {
       try {
         const models = await inner.llm.listModels(providerId)
         if (Array.isArray(models)) {
+          if (modelsCache.size > 20) {
+            const oldest = modelsCache.keys().next().value
+            modelsCache.delete(oldest)
+          }
           modelsCache.set(providerId, { at: Date.now(), models })
           return models
         }
@@ -238,9 +529,17 @@ export function apply(ctx) {
           signal: controller.signal,
         })
         if (!response.ok) return { failure: `http-${response.status}` }
-        return { body: await response.json() }
+        try {
+          return { body: await response.json() }
+        } catch (error) {
+          // A timeout that fires while the body is streaming arrives here, not
+          // at the fetch itself, so it is a timeout and not a bad answer.
+          if (error?.name === 'AbortError') return { failure: 'timeout' }
+          return { failure: 'unexpected-response' }
+        }
       } catch (error) {
-        return { failure: error?.name === 'AbortError' ? 'timeout' : 'network' }
+        if (error?.name === 'AbortError') return { failure: 'timeout' }
+        return { failure: 'network', detail: tlsUntrusted(error) ? 'tls-untrusted' : undefined }
       } finally {
         clearTimeout(timer)
       }
@@ -351,7 +650,91 @@ export function apply(ctx) {
       return { windows: [], balance: { amount, currency, label: 'MiniMax balance' } }
     }
 
-    async function probeUsage(strategy, key) {
+    /**
+     * The origin the Host half reaches its own web server on.
+     *
+     * dsh-agy-link serves the quota pool on the very listener the bubble is
+     * served from, so the bubble reads it back over loopback instead of
+     * keeping a second copy of the Google OAuth session. A wildcard bind has
+     * no address of its own, and loopback reaches the same listener.
+     */
+    function loopbackOrigin() {
+      let origin
+      try {
+        origin = inner.webServer.getOrigin()
+      } catch {
+        return undefined
+      }
+      if (typeof origin !== 'string' || origin.length === 0) return undefined
+      try {
+        // The bind address is always one concrete local interface: the web
+        // server refuses a wildcard address, so this origin reaches the same
+        // listener the bubble is served from.
+        return new URL(origin).origin
+      } catch {
+        return undefined
+      }
+    }
+
+    /**
+     * The Antigravity counters, read from the pool dsh-agy-link already keeps.
+     *
+     * That plugin owns the Google OAuth session and one counter per account
+     * and model family, and publishes them on its own route. The bubble asks
+     * for the pool over loopback and sends no credential of its own: the
+     * family comes from the running model's slug, and the account is the one
+     * that would serve that family next, recomputed from the snapshot rather
+     * than by asking the sibling plugin to pick one.
+     */
+    async function probeAgPool(strategy, modelId) {
+      const family = agyFamilyOf(modelId)
+      if (family === undefined) return { failure: 'no-model-family' }
+      const origin = loopbackOrigin()
+      if (origin === undefined) return { failure: 'no-origin' }
+      const result = await getJson(`${origin}${strategy.poolPath}`, undefined)
+      if (result.body === undefined) {
+        // A host with an untrusted certificate is still reachable, so say that
+        // rather than reporting the pool as missing.
+        return { failure: result.detail === 'tls-untrusted' ? 'tls-untrusted' : result.failure }
+      }
+      if (result.body === null || typeof result.body !== 'object') return { failure: 'unexpected-response' }
+      // The pool was read. Whatever follows is the pool's answer about this
+      // model, not a problem reaching it.
+      const accounts = Array.isArray(result.body.accounts) ? result.body.accounts : []
+      if (accounts.length === 0) return { failure: 'no-account', poolRead: true }
+      const now = Date.now()
+      const account = agySelectAccount(result.body, family, now)
+      if (account === undefined) return { failure: 'no-eligible-account', poolRead: true }
+      if (!agyAccountAvailable(account, family, now)) return { failure: 'no-eligible-account', poolRead: true }
+      const windows = agyWindows(account, family)
+      if (windows === undefined) return { failure: 'no-quota', poolRead: true }
+      const eligibleAccounts = accounts.filter((a) => agyAccountAvailable(a, family, now))
+      const poolInfo = {
+        totalAccounts: accounts.length,
+        activeId: account.id,
+        activeEmail: account.email ? (account.email.charAt(0).toUpperCase() + account.email.slice(1)) : account.id,
+        eligibleCount: eligibleAccounts.length,
+        nextEligibleId: eligibleAccounts.find((a) => a.id !== account.id)?.id,
+      }
+      return { windows, balance: null, poolInfo }
+    }
+
+    async function probeUsage(strategy, key, modelId) {
+      if (strategy.kind === 'agy-pool') {
+        return probeAgPool(strategy, modelId)
+      }
+      if (strategy.kind === 'models-ping') {
+        const result = await getJson(strategy.usageEndpoint, key)
+        if (result.body === undefined) return { failure: result.failure }
+        if (result.body?.error) return { failure: result.body.error?.code ?? 'api-error' }
+        const models = Array.isArray(result.body?.data) ? result.body.data : []
+        return {
+          windows: [],
+          balance: null,
+          note: `Active provider connection (${models.length} models available)`,
+          usageSource: strategy.source,
+        }
+      }
       if (strategy.kind === 'minimax') {
         const paygo = typeof key === 'string' && key.startsWith('sk-api-')
         const endpoint = paygo ? `${strategy.base}/account/query_balance` : `${strategy.base}/v1/token_plan/remains`
@@ -393,8 +776,8 @@ export function apply(ctx) {
       return { failure: 'unsupported-strategy' }
     }
 
-    async function probe() {
-      const model = runningModel()
+    async function probe(modelOverride) {
+      const model = runningModel(modelOverride)
       const providerId = model === undefined ? undefined : model.provider
       const catalog = loadCatalog()
       if (providerId === undefined) {
@@ -422,6 +805,53 @@ export function apply(ctx) {
         }
       }
 
+      // Antigravity quota is owned by the dsh-agy-link plugin, which holds the
+      // Google OAuth session and keeps the counters itself. The bubble resolves
+      // no credential for it: it reads the counters that plugin already keeps.
+      if (strategy.kind === 'agy-pool') {
+        const usageResult = await probeUsage(strategy, undefined, model.model)
+        if (usageResult.failure !== undefined) {
+          const note = AGY_NOTES[usageResult.failure]
+          if (note !== undefined) {
+            return {
+              ok: true,
+              // The pool route was read; it simply holds nothing for this
+              // model right now. That is not the same as a provider with no
+              // usage endpoint, and the card says so.
+              provider: {
+                ...provider,
+                usageApi: false,
+                usageSource: null,
+                usageEmpty: usageResult.poolRead === true,
+              },
+              runningModel: runningModelPayload,
+              usage: { windows: [], balance: null },
+              note,
+              fetchedAt: new Date().toISOString(),
+              revision: REVISION,
+            }
+          }
+          return {
+            ok: false,
+            error: usageResult.failure,
+            provider: { ...provider, usageApi: true, usageSource: strategy.kind },
+            endpoint: strategy.poolPath,
+            runningModel: runningModelPayload,
+            revision: REVISION,
+          }
+        }
+        return {
+          ok: true,
+          provider: { ...provider, usageApi: true, usageSource: 'windows' },
+          usage: usageResult,
+          poolInfo: usageResult.poolInfo,
+          endpoint: strategy.poolPath,
+          runningModel: runningModelPayload,
+          fetchedAt: new Date().toISOString(),
+          revision: REVISION,
+        }
+      }
+
       const credential = await resolveCredential(strategy.credentialRefs)
       if (credential === undefined) {
         return {
@@ -434,7 +864,7 @@ export function apply(ctx) {
         }
       }
 
-      const usageResult = await probeUsage(strategy, credential.key)
+      const usageResult = await probeUsage(strategy, credential.key, model.model)
       if (usageResult.failure !== undefined) {
         return {
           ok: false,
@@ -451,9 +881,17 @@ export function apply(ctx) {
         provider: {
           ...provider,
           usageApi: true,
-          usageSource: usageResult.balance === null ? 'windows' : 'balance',
+          usageSource:
+            usageResult.usageSource ??
+            (usageResult.windows && usageResult.windows.length > 0
+              ? 'windows'
+              : usageResult.balance !== null
+                ? 'balance'
+                : 'models-ping'),
         },
         usage: usageResult,
+        poolInfo: usageResult.poolInfo,
+        note: usageResult.note,
         credentialRef: credential.ref,
         endpoint: usageResult.endpoint ?? strategy.usageEndpoint,
         runningModel: runningModelPayload,
@@ -484,13 +922,35 @@ export function apply(ctx) {
           }
           const query = new URL(req.url ?? ROUTE_PATH, 'http://localhost').searchParams
           const force = query.get('refresh') === '1'
-          const model = runningModel()
-          const key = model === undefined ? 'none' : `${model.provider ?? ''}|${model.model ?? ''}`
-          if (force || cache === undefined || cache.key !== key || Date.now() - cache.at > CACHE_TTL_MS) {
-            const body = await probe()
-            cache = { key, at: Date.now(), body }
+          let modelOverride
+          const qProvider = query.get('provider')
+          const qModel = query.get('model')
+          const qEffort = query.get('reasoningEffort')
+          if (typeof qProvider === 'string' && qProvider.length > 0 && typeof qModel === 'string' && qModel.length > 0) {
+            modelOverride = {
+              provider: qProvider,
+              model: qModel,
+              reasoningEffort: typeof qEffort === 'string' && qEffort.length > 0 ? qEffort : undefined,
+            }
+          } else {
+            const sessionId = query.get('session')
+            if (typeof sessionId === 'string' && sessionId.length > 0) {
+              modelOverride = await resolveSessionModel(sessionId)
+            }
           }
-          sendJson(res, cache.body)
+          const model = runningModel(modelOverride)
+          const key = model === undefined ? 'none' : `${model.provider ?? ''}|${model.model ?? ''}${model.reasoningEffort ? `|${model.reasoningEffort}` : ''}`
+          const cached = cache.get(key)
+          if (force || cached === undefined || Date.now() - cached.at > CACHE_TTL_MS) {
+            const body = await probe(model)
+            if (cache.size > 50) {
+              const oldestKey = cache.keys().next().value
+              cache.delete(oldestKey)
+            }
+            cache.set(key, { at: Date.now(), body })
+          }
+          const entry = cache.get(key)
+          sendJson(res, entry.body)
         },
       }),
     )

@@ -21,6 +21,7 @@ Target: **WCAG 2.2 AA**.
 
 ## Verifying
 
+- Run `npm run check` (`check-tokens.mjs`, `check-antigravity.mjs`, `check-session-switching.mjs`) to verify token parity, Antigravity pool failover rules, and session switching resolution.
 - Run the card with the Harness, then run axe-core against the card element and the collapsed pill with the WCAG 2.2 AA tags (`wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`, `wcag22aa`, `best-practice`). Zero violations expected.
 - Re-measure contrast for any changed text colour by sampling the rendered screenshot; record the ratio in the table in the README.
 - Walk the keyboard table in the README and confirm focus moves as described.

@@ -14,7 +14,7 @@ window.__ModuleLoader__.load({
     const { useCallback, useEffect, useMemo, useRef, useState } = React
 
     const ROUTE = '/plugin/quota-bubble'
-    const REFRESH_MS = 5_000
+    const REFRESH_MS = 20_000
 
     const PROVIDER_LOGOS = {
       'opencode-go': '<svg fill="currentColor" fill-rule="evenodd" height="100%" style="display:block" viewBox="0 0 24 24" width="100%" xmlns="http://www.w3.org/2000/svg"><path d="M16 6H8v12h8V6zm4 16H4V2h16v20z"></path></svg>',
@@ -62,6 +62,7 @@ window.__ModuleLoader__.load({
       'claude': '<svg height="100%" style="display:block" viewBox="0 0 24 24" width="100%" xmlns="http://www.w3.org/2000/svg"><path d="M4.709 15.955l4.72-2.647.08-.23-.08-.128H9.2l-.79-.048-2.698-.073-2.339-.097-2.266-.122-.571-.121L0 11.784l.055-.352.48-.321.686.06 1.52.103 2.278.158 1.652.097 2.449.255h.389l.055-.157-.134-.098-.103-.097-2.358-1.596-2.552-1.688-1.336-.972-.724-.491-.364-.462-.158-1.008.656-.722.881.06.225.061.893.686 1.908 1.476 2.491 1.833.365.304.145-.103.019-.073-.164-.274-1.355-2.446-1.446-2.49-.644-1.032-.17-.619a2.97 2.97 0 01-.104-.729L6.283.134 6.696 0l.996.134.42.364.62 1.414 1.002 2.229 1.555 3.03.456.898.243.832.091.255h.158V9.01l.128-1.706.237-2.095.23-2.695.08-.76.376-.91.747-.492.584.28.48.685-.067.444-.286 1.851-.559 2.903-.364 1.942h.212l.243-.242.985-1.306 1.652-2.064.73-.82.85-.904.547-.431h1.033l.76 1.129-.34 1.166-1.064 1.347-.881 1.142-1.264 1.7-.79 1.36.073.11.188-.02 2.856-.606 1.543-.28 1.841-.315.833.388.091.395-.328.807-1.969.486-2.309.462-3.439.813-.042.03.049.061 1.549.146.662.036h1.622l3.02.225.79.522.474.638-.079.485-1.215.62-1.64-.389-3.829-.91-1.312-.329h-.182v.11l1.093 1.068 2.006 1.81 2.509 2.33.127.578-.322.455-.34-.049-2.205-1.657-.851-.747-1.926-1.62h-.128v.17l.444.649 2.345 3.521.122 1.08-.17.353-.608.213-.668-.122-1.374-1.925-1.415-2.167-1.143-1.943-.14.08-.674 7.254-.316.37-.729.28-.607-.461-.322-.747.322-1.476.389-1.924.315-1.53.286-1.9.17-.632-.012-.042-.14.018-1.434 1.967-2.18 2.945-1.726 1.845-.414.164-.717-.37.067-.662.401-.589 2.388-3.036 1.44-1.882.93-1.086-.006-.158h-.055L4.132 18.56l-1.13.146-.487-.456.061-.746.231-.243 1.908-1.312-.006.006z" fill="#D97757" fill-rule="nonzero"></path></svg>',
       'gemma': '<svg height="100%" style="display:block" viewBox="0 0 24 24" width="100%" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="lobe-icons-gemma-_R_0_" x1="24.419%" x2="75.194%" y1="75.581%" y2="25.194%"><stop offset="0%" stop-color="#446EFF"></stop><stop offset="36.661%" stop-color="#2E96FF"></stop><stop offset="83.221%" stop-color="#B1C5FF"></stop></linearGradient></defs><path d="M12.34 5.953a8.233 8.233 0 01-.247-1.125V3.72a8.25 8.25 0 015.562 2.232H12.34zm-.69 0c.113-.373.199-.755.257-1.145V3.72a8.25 8.25 0 00-5.562 2.232h5.304zm-5.433.187h5.373a7.98 7.98 0 01-.267.696 8.41 8.41 0 01-1.76 2.65L6.216 6.14zm-.264-.187H2.977v.187h2.915a8.436 8.436 0 00-2.357 5.767H0v.186h3.535a8.436 8.436 0 002.357 5.767H2.977v.186h2.976v2.977h.187v-2.915a8.436 8.436 0 005.767 2.357V24h.186v-3.535a8.436 8.436 0 005.767-2.357v2.915h.186v-2.977h2.977v-.186h-2.915a8.436 8.436 0 002.357-5.767H24v-.186h-3.535a8.436 8.436 0 00-2.357-5.767h2.915v-.187h-2.977V2.977h-.186v2.915a8.436 8.436 0 00-5.767-2.357V0h-.186v3.535A8.436 8.436 0 006.14 5.892V2.977h-.187v2.976zm6.14 14.326a8.25 8.25 0 005.562-2.233H12.34c-.108.367-.19.743-.247 1.126v1.107zm-.186-1.087a8.015 8.015 0 00-.258-1.146H6.345a8.25 8.25 0 005.562 2.233v-1.087zm-8.186-7.285h1.107a8.23 8.23 0 001.125-.247V6.345a8.25 8.25 0 00-2.232 5.562zm1.087.186H3.72a8.25 8.25 0 002.232 5.562v-5.304a8.012 8.012 0 00-1.145-.258zm15.47-.186a8.25 8.25 0 00-2.232-5.562v5.315c.367.108.743.19 1.126.247h1.107zm-1.086.186c-.39.058-.772.144-1.146.258v5.304a8.25 8.25 0 002.233-5.562h-1.087zm-1.332 5.69V12.41a7.97 7.97 0 00-.696.267 8.409 8.409 0 00-2.65 1.76l3.346 3.346zm0-6.18v-5.45l-.012-.013h-5.451c.076.235.162.468.26.696a8.698 8.698 0 001.819 2.688 8.698 8.698 0 002.688 1.82c.228.097.46.183.696.259zM6.14 17.848V12.41c.235.078.468.167.696.267a8.403 8.403 0 012.688 1.799 8.404 8.404 0 011.799 2.688c.1.228.19.46.267.696H6.152l-.012-.012zm0-6.245V6.326l3.29 3.29a8.716 8.716 0 01-2.594 1.728 8.14 8.14 0 01-.696.259zm6.257 6.257h5.277l-3.29-3.29a8.716 8.716 0 00-1.728 2.594 8.135 8.135 0 00-.259.696zm-2.347-7.81a9.435 9.435 0 01-2.88 1.96 9.14 9.14 0 012.88 1.94 9.14 9.14 0 011.94 2.88 9.435 9.435 0 011.96-2.88 9.14 9.14 0 012.88-1.94 9.435 9.435 0 01-2.88-1.96 9.434 9.434 0 01-1.96-2.88 9.14 9.14 0 01-1.94 2.88z" fill="url(#lobe-icons-gemma-_R_0_)" fill-rule="evenodd"></path></svg>',
       'grok': '<svg fill="currentColor" fill-rule="evenodd" height="100%" style="display:block" viewBox="0 0 24 24" width="100%" xmlns="http://www.w3.org/2000/svg"><path d="M9.27 15.29l7.978-5.897c.391-.29.95-.177 1.137.272.98 2.369.542 5.215-1.41 7.169-1.951 1.954-4.667 2.382-7.149 1.406l-2.711 1.257c3.889 2.661 8.611 2.003 11.562-.953 2.341-2.344 3.066-5.539 2.388-8.42l.006.007c-.983-4.232.242-5.924 2.75-9.383.06-.082.12-.164.179-.248l-3.301 3.305v-.01L9.267 15.292M7.623 16.723c-2.792-2.67-2.31-6.801.071-9.184 1.761-1.763 4.647-2.483 7.166-1.425l2.705-1.25a7.808 7.808 0 00-1.829-1A8.975 8.975 0 005.984 5.83c-2.533 2.536-3.33 6.436-1.962 9.764 1.022 2.487-.653 4.246-2.34 6.022-.599.63-1.199 1.259-1.682 1.925l7.62-6.815"></path></svg>',
+      'antigravity': '<svg fill="currentColor" fill-rule="evenodd" height="100%" style="display:block" viewBox="0 0 24 24" width="100%" xmlns="http://www.w3.org/2000/svg"><path d="M21.751 22.607c1.34 1.005 3.35.335 1.508-1.508C17.73 15.74 18.904 1 12.037 1 5.17 1 6.342 15.74.815 21.1c-2.01 2.009.167 2.511 1.507 1.506 5.192-3.517 4.857-9.714 9.715-9.714 4.857 0 4.522 6.197 9.714 9.715z"></path></svg>',
     }
 
     const PROVIDER_LOGO_ACCENTS = {
@@ -85,6 +86,10 @@ window.__ModuleLoader__.load({
       'claude': '#D97757',
       'gemma': '#4285F4',
       'grok': '#111111',
+      // The Antigravity mark is Google's, but in the Google blue it reads as
+      // the Gemini mark beside it. The indigo is the accent the dsh-agy-link
+      // plugin that publishes these counters already carries.
+      'antigravity': '#6366F1',
     }
 
     // Model-family keys reused from the provider set.
@@ -154,6 +159,10 @@ window.__ModuleLoader__.load({
     }
 
     function storeRemoteLogo(slug, svg) {
+      if (remoteLogoCache.size > 30) {
+        const oldest = remoteLogoCache.keys().next().value
+        remoteLogoCache.delete(oldest)
+      }
       remoteLogoCache.set(slug, svg)
       try {
         const all = readLogoCache()
@@ -417,6 +426,72 @@ window.__ModuleLoader__.load({
         creditInkMuted: 'rgba(91,83,128,0.78)',
         ribbonFilter: 'drop-shadow(0 3px 9px rgba(226,185,105,0.65))',
       },
+      dark: {
+        textPrimary: PRIMITIVE.neutral[0],
+        textSecondary: PRIMITIVE.neutral[100],
+        textMuted: PRIMITIVE.neutral[300],
+        textOnStrong: PRIMITIVE.neutral[0],
+        cardGradient: 'linear-gradient(160deg, #1e1735 0%, #17112b 30%, #201938 58%, #140e26 100%)',
+        cardShadow: '0 28px 58px -26px rgba(0,0,0,0.85), 0 12px 26px -18px rgba(0,0,0,0.6)',
+        aura: 'radial-gradient(120% 62% at 88% -12%, rgba(217,174,92,0.25), rgba(217,174,92,0) 62%), radial-gradient(85% 55% at 8% -8%, rgba(138,91,255,0.35), rgba(138,91,255,0) 68%), radial-gradient(95% 60% at 50% 108%, rgba(75,59,143,0.35), rgba(75,59,143,0) 72%)',
+        panelGradient: 'linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))',
+        panelShadow: 'inset 0 0 0 1px rgba(255,255,255,0.12), inset 0 1px 0 rgba(255,255,255,0.18), 0 6px 14px -12px rgba(0,0,0,0.5)',
+        balanceGradient: 'linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04))',
+        balanceShadow: 'inset 0 0 0 1px rgba(255,255,255,0.14), inset 0 1px 0 rgba(255,255,255,0.18)',
+        divider: 'inset 0 1px 0 rgba(255,255,255,0.12)',
+        logoPlate: 'linear-gradient(180deg, rgba(45,34,75,0.9), rgba(30,22,55,0.85))',
+        logoPlateBorder: 'rgba(169,139,255,0.35)',
+        railSurface: 'rgba(255,255,255,0.08)',
+        railRim: 'inset 0 0 0 1px rgba(169,139,255,0.25), 0 1px 2px rgba(0,0,0,0.4)',
+        trackGood: 'rgba(52,211,153,0.20)',
+        trackWarn: 'rgba(252,211,77,0.25)',
+        trackBad: 'rgba(251,113,133,0.22)',
+        trackIdle: 'rgba(169,156,201,0.18)',
+        barGood: 'linear-gradient(90deg, #34d399 0%, #38bdf8 100%)',
+        barWarn: 'linear-gradient(90deg, #fcd34d 0%, #fb923c 100%)',
+        barBad: 'linear-gradient(90deg, #fb7185 0%, #ef4444 100%)',
+        barIdle: 'linear-gradient(90deg, #7a6f9c 0%, #4f4874 100%)',
+        barGlow: '0 0 12px rgba(56,140,255,0.7)',
+        bubbleFill: 'radial-gradient(circle at 35% 30%, #ffffff, #a8ecff 45%, #4fc3ff 100%)',
+        bubbleShadow: '0 0 0 1.2px rgba(255,255,255,0.6), 0 0 8px rgba(90,200,255,0.9)',
+        stateSuccess: PRIMITIVE.emerald[400],
+        stateWarning: PRIMITIVE.amber[400],
+        stateError: PRIMITIVE.red[400],
+        stateIdle: PRIMITIVE.neutral[400],
+        stateInfo: PRIMITIVE.blue[400],
+        warnSurface: 'rgba(196,127,20,0.18)',
+        warnBorder: 'inset 0 0 0 1px rgba(252,211,77,0.35)',
+        warnInk: PRIMITIVE.amber[400],
+        pillSurface: 'rgba(30,22,55,0.85)',
+        pillBorder: 'rgba(169,139,255,0.35)',
+        pillInk: PRIMITIVE.neutral[300],
+        pillButtonSurface: 'rgba(28,21,50,0.92)',
+        pillButtonBorder: 'rgba(169,139,255,0.4)',
+        pillButtonShadow: '0 16px 34px -16px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.15)',
+        controlSurface: 'linear-gradient(180deg, rgba(45,35,75,0.9), rgba(30,23,55,0.8))',
+        controlSurfaceHover: 'linear-gradient(180deg, rgba(65,50,105,0.95), rgba(45,35,80,0.85))',
+        controlSurfaceActive: 'linear-gradient(180deg, rgba(30,22,52,0.95), rgba(22,16,40,0.9))',
+        controlSurfaceDisabled: 'linear-gradient(180deg, rgba(30,22,50,0.5), rgba(20,15,35,0.4))',
+        controlBorder: 'rgba(169,139,255,0.35)',
+        controlBorderDisabled: 'rgba(255,255,255,0.1)',
+        controlInk: PRIMITIVE.violet[300],
+        controlInkDisabled: 'rgba(169,156,201,0.4)',
+        controlShadow: '0 3px 8px -5px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.15)',
+        controlShadowHover: '0 4px 10px -5px rgba(0,0,0,0.8), 0 0 0 2px rgba(226,189,117,0.4), inset 0 1px 0 rgba(255,255,255,0.2)',
+        focusRing: PRIMITIVE.violet[400],
+        focusHalo: 'rgba(169,139,255,0.35)',
+        icoSurface: 'linear-gradient(180deg, #2b204c, #1d1636)',
+        icoBorder: 'rgba(169,139,255,0.35)',
+        icoShadow: 'inset 0 1px 0 rgba(255,255,255,0.12), 0 1px 3px rgba(0,0,0,0.4)',
+        icoInk: PRIMITIVE.violet[300],
+        sparkle: 'rgba(169,139,255,0.9)',
+        sparkleWarm: PRIMITIVE.amber[400],
+        meterLabelInk: PRIMITIVE.neutral[200],
+        countdownInk: PRIMITIVE.neutral[400],
+        creditInk: PRIMITIVE.neutral[400],
+        creditInkMuted: 'rgba(169,156,201,0.7)',
+        ribbonFilter: 'drop-shadow(0 3px 9px rgba(217,174,92,0.55))',
+      },
     }
 
     const CARD_CSS = [
@@ -429,10 +504,11 @@ window.__ModuleLoader__.load({
       '@keyframes ogq-blow{0%{transform:translateY(46px) scale(.16);opacity:0;filter:blur(2px)}35%{opacity:.75}62%{transform:translateY(-5px) scale(1.04);opacity:1}78%{transform:translateY(1px) scale(.985)}100%{transform:translateY(0) scale(1);opacity:1;filter:blur(0)}}',
       '@keyframes ogq-ring{0%{transform:scale(.25);opacity:.8}100%{transform:scale(2.1) translateY(12px);opacity:0}}',
       '@keyframes ogq-sheen{0%{opacity:0}18%{opacity:.85}100%{opacity:0}}',
+      '@keyframes ogq-glow-badge{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.7)}50%{box-shadow:0 0 0 4px rgba(239,68,68,0)}}',
       '.ogq-card{transition:transform 200ms ease,box-shadow 200ms ease;transform-origin:50% 100%;',
       '-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;',
       'font-synthesis:none;isolation:isolate}',
-      '.ogq-squircle{corner-shape:superellipse(2)}',
+      '.ogq-squircle{border-radius:38px}',
       '.ogq-card.is-bursting{animation:ogq-burst 340ms cubic-bezier(.45,0,.75,.3) forwards;pointer-events:none}',
       '.ogq-card.is-blowing{animation:ogq-blow 640ms cubic-bezier(.2,.85,.25,1) both}',
       '.ogq-burst-ring{position:absolute;left:50%;bottom:6px;width:64px;height:64px;margin-left:-32px;border-radius:999px;',
@@ -440,7 +516,7 @@ window.__ModuleLoader__.load({
       '.ogq-blow-sheen{position:absolute;inset:0;border-radius:inherit;pointer-events:none;',
       'background:radial-gradient(circle at 28% 14%,rgba(255,255,255,0.6),rgba(255,255,255,0) 58%);animation:ogq-sheen 680ms ease-out both}',
       '.ogq-aura{position:absolute;inset:0;border-radius:inherit;pointer-events:none}',
-      '.ogq-ribbon{position:absolute;top:-10px;right:-18px;width:92%;height:92px;pointer-events:none;opacity:1}',
+      '.ogq-ribbon{position:absolute;top:0;right:0;width:170px;height:150px;pointer-events:none;z-index:1;contain:paint}',
       '.ogq-ico{width:var(--ogq-icon-tile,24px);height:var(--ogq-icon-tile,24px);flex:0 0 auto;border-radius:var(--ogq-icon-radius,8px);display:flex;align-items:center;justify-content:center;',
       'background:var(--ogq-ico-surface);border:1px solid var(--ogq-ico-border);box-shadow:var(--ogq-ico-shadow);color:var(--ogq-ico-ink)}',
       '.ogq-meter{transition:transform 180ms ease}',
@@ -450,7 +526,10 @@ window.__ModuleLoader__.load({
       '.ogq-meter:hover .ogq-meter-fill{filter:saturate(1.12) brightness(1.05)}',
       '.ogq-dot{animation:ogq-pulse 2.6s ease-in-out infinite}',
       '.ogq-bump{animation:ogq-bump 480ms cubic-bezier(.2,.9,.3,1.2);display:inline-block}',
-      '.ogq-sparkle{animation:ogq-twinkle 3.6s ease-in-out infinite;transform-origin:center}',
+      '.ogq-sparkle{animation:ogq-twinkle 3.6s ease-in-out infinite;transform-origin:center;will-change:transform,opacity;contain:paint}',
+      '.ogq-warn-badge{display:inline-block;width:7px;height:7px;border-radius:999px;background:#ef4444;animation:ogq-glow-badge 1.5s infinite;flex:0 0 auto}',
+      '.ogq-account-chip{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:5px 8px;border-radius:10px;font-size:11px;font-weight:600}',
+      '.ogq-session-chip{display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:8px;font-size:11px;font-weight:600}',
       '.ogq-icon-button{display:inline-flex;align-items:center;justify-content:center;width:var(--ogq-control-size,24px);height:var(--ogq-control-size,24px);padding:0;',
       'border:1px solid var(--ogq-btn-border);border-radius:var(--ogq-control-radius,999px);cursor:pointer;color:var(--ogq-btn-ink);',
       'background:var(--ogq-btn-surface);box-shadow:var(--ogq-btn-shadow);',
@@ -483,6 +562,67 @@ window.__ModuleLoader__.load({
     const LOGO_CACHE_KEY = 'ogq-logo-cache-v1'
     const LOGO_CACHE_TTL_MS = 24 * 60 * 60_000
     const LOGO_FETCH_TIMEOUT_MS = 2500
+
+    function parseSemver(v) {
+      if (typeof v !== 'string') return [0, 0, 0]
+      const clean = v.replace(/^v/, '').trim()
+      const parts = clean.split('-')[0].split('.').map((p) => parseInt(p, 10) || 0)
+      while (parts.length < 3) parts.push(0)
+      return parts
+    }
+
+    function compareSemver(v1, v2) {
+      const [maj1, min1, pat1] = parseSemver(v1)
+      const [maj2, min2, pat2] = parseSemver(v2)
+      if (maj1 !== maj2) return maj1 - maj2
+      if (min1 !== min2) return min1 - min2
+      return pat1 - pat2
+    }
+
+    const UPDATE_CACHE_KEY = 'dsh-quota-bubble:update-check'
+    const UPDATE_CACHE_TTL = 3600_000
+
+    async function checkPluginUpdate(force) {
+      try {
+        if (!force && typeof window !== 'undefined' && window.localStorage) {
+          const cached = window.localStorage.getItem(UPDATE_CACHE_KEY)
+          if (cached) {
+            const parsed = JSON.parse(cached)
+            if (Date.now() - parsed.at < UPDATE_CACHE_TTL && parsed.result) {
+              return parsed.result
+            }
+          }
+        }
+      } catch {}
+
+      let result = { status: 'up-to-date', latestVersion: PLUGIN_VERSION }
+      try {
+        const ctrl = new AbortController()
+        const timer = setTimeout(() => ctrl.abort(), 2500)
+        const res = await fetch('https://registry.npmjs.org/dsh-quota-bubble', {
+          signal: ctrl.signal,
+          headers: { accept: 'application/json' },
+        })
+        clearTimeout(timer)
+        if (res.ok) {
+          const data = await res.json()
+          const latest = data?.['dist-tags']?.latest ?? Object.keys(data?.versions ?? {}).pop()
+          if (typeof latest === 'string' && compareSemver(latest, PLUGIN_VERSION) > 0) {
+            result = { status: 'update-available', latestVersion: latest }
+          } else {
+            result = { status: 'up-to-date', latestVersion: latest || PLUGIN_VERSION }
+          }
+        }
+      } catch {}
+
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) {
+          window.localStorage.setItem(UPDATE_CACHE_KEY, JSON.stringify({ at: Date.now(), result }))
+        }
+      } catch {}
+
+      return result
+    }
 
     const FONT_STACK =
       "'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif"
@@ -535,28 +675,77 @@ window.__ModuleLoader__.load({
       return c.barGood
     }
 
-    function resetText(iso) {
-      if (typeof iso !== 'string') return ''
+    function resetText(iso, now = Date.now()) {
+      if (typeof iso !== 'string' || iso.length === 0) return ''
       const at = Date.parse(iso)
       if (Number.isNaN(at)) return ''
-      const delta = at - Date.now()
+      const delta = at - now
       if (delta <= 0) return 'resetting now'
-      const minutes = Math.max(1, Math.round(delta / 60_000))
-      if (minutes < 60) return `in ${minutes}m`
+      const totalSeconds = Math.max(0, Math.floor(delta / 1000))
+      if (totalSeconds < 60) return `in ${totalSeconds}s`
+      const minutes = Math.floor(totalSeconds / 60)
+      const seconds = totalSeconds % 60
+      if (minutes < 60) {
+        return seconds > 0 ? `in ${minutes}m ${seconds}s` : `in ${minutes}m`
+      }
       const hours = Math.floor(minutes / 60)
       const rest = minutes % 60
       if (hours < 36) return `in ${hours}h${rest > 0 ? ` ${rest}m` : ''}`
       return `in ${Math.round(hours / 24)}d`
     }
 
-    function updatedText(at) {
+    function updatedText(at, now = Date.now()) {
       if (typeof at !== 'number' || at <= 0) return ''
-      const seconds = Math.max(0, Math.round((Date.now() - at) / 1000))
+      const seconds = Math.max(0, Math.round((now - at) / 1000))
       if (seconds < 10) return 'Just now'
       if (seconds < 60) return `${seconds}s ago`
       const minutes = Math.round(seconds / 60)
       if (minutes < 60) return `${minutes}m ago`
       return `${Math.round(minutes / 60)}h ago`
+    }
+
+    function computeSessionRunway(primaryLeft, sessionMetrics, baseline) {
+      if (typeof primaryLeft !== 'number' || primaryLeft <= 0 || !sessionMetrics || sessionMetrics.turns < 1) {
+        return null
+      }
+      const turns = sessionMetrics.turns
+      // Exact delta calculation when baseline exists from session start
+      if (
+        baseline &&
+        typeof baseline.startLeft === 'number' &&
+        baseline.startLeft > primaryLeft &&
+        turns > baseline.startTurns
+      ) {
+        const burned = baseline.startLeft - primaryLeft
+        const turnDelta = turns - baseline.startTurns
+        const burnPerTurn = burned / turnDelta
+        if (burnPerTurn >= 0.05) {
+          const turnsLeft = Math.max(1, Math.round(primaryLeft / burnPerTurn))
+          return {
+            turnsLeft,
+            burnRate: burnPerTurn,
+            badge: `~${turnsLeft} turn${turnsLeft === 1 ? '' : 's'} left`,
+            tooltip: `Burn rate: ~${burnPerTurn.toFixed(1)}%/turn (${turnDelta} turns observed) · ~${turnsLeft} turns remaining`,
+            isLow: turnsLeft <= 5 || primaryLeft <= 15,
+          }
+        }
+      }
+
+      // Proportional estimate based on total consumed quota and session turns
+      const consumed = Math.max(0.5, 100 - primaryLeft)
+      const estBurnPerTurn = consumed / Math.max(1, turns)
+      if (estBurnPerTurn >= 0.1 && estBurnPerTurn <= 35) {
+        const turnsLeft = Math.max(1, Math.round(primaryLeft / estBurnPerTurn))
+        return {
+          turnsLeft,
+          burnRate: estBurnPerTurn,
+          badge: `~${turnsLeft} turn${turnsLeft === 1 ? '' : 's'} left`,
+          tooltip: `Est. pace: ~${estBurnPerTurn.toFixed(1)}%/turn · ~${turnsLeft} turns remaining before quota exhaust`,
+          isLow: turnsLeft <= 5 || primaryLeft <= 15,
+        }
+      }
+
+      return null
     }
 
     function prettyModel(id) {
@@ -575,6 +764,11 @@ window.__ModuleLoader__.load({
         return [...mapped.slice(0, -2), `${beforeLast}.${last}`].join(' ')
       }
       return mapped.join(' ')
+    }
+
+    function toSentenceCase(str) {
+      if (typeof str !== 'string' || str.length === 0) return ''
+      return str.charAt(0).toUpperCase() + str.slice(1)
     }
 
     function buildMark(logo, label) {
@@ -658,16 +852,17 @@ window.__ModuleLoader__.load({
           'aria-expanded': props.expanded,
           'aria-controls': props.controls,
           'aria-busy': props.busy === true ? 'true' : undefined,
+          style: props.style,
         },
         h(
           'svg',
           {
-            viewBox: '0 0 16 16',
-            width: 12,
-            height: 12,
+            viewBox: props.viewBox === undefined ? '0 0 16 16' : props.viewBox,
+            width: props.iconSize === undefined ? 12 : props.iconSize,
+            height: props.iconSize === undefined ? 12 : props.iconSize,
             fill: 'none',
             stroke: 'currentColor',
-            strokeWidth: 1.7,
+            strokeWidth: props.strokeWidth === undefined ? 1.7 : props.strokeWidth,
             strokeLinecap: 'round',
             strokeLinejoin: 'round',
             'aria-hidden': true,
@@ -682,6 +877,10 @@ window.__ModuleLoader__.load({
       const c = props.colors
       const mode = props.mode === undefined ? (props.online ? 'live' : 'offline') : props.mode
       const color = mode === 'live' ? c.stateSuccess : mode === 'offline' ? c.stateError : c.stateIdle
+      // "no api" says the provider has no endpoint to read. "no data" says the
+      // endpoint was read and holds nothing right now, which is a different
+      // thing to tell someone looking at the card.
+      const word = mode === 'live' ? 'live' : mode === 'offline' ? 'offline' : mode === 'nodata' ? 'no data' : 'no api'
       return h(
         'span',
         {
@@ -704,7 +903,7 @@ window.__ModuleLoader__.load({
           className: mode === 'live' ? 'ogq-dot' : undefined,
           style: { width: 5, height: 5, borderRadius: 999, background: color, flex: '0 0 auto' },
         }),
-        mode === 'live' ? 'live' : mode === 'offline' ? 'offline' : 'no api',
+        word,
       )
     }
 
@@ -745,7 +944,41 @@ window.__ModuleLoader__.load({
       const fill = gradientFor(c, left, entry?.status)
       const track = trackFor(c, left, entry?.status)
       const target = left === undefined ? 0 : Math.max(3, left)
-      const reset = resetText(entry?.resetsAt)
+      const [now, setNow] = useState(() => Date.now())
+
+      useEffect(() => {
+        if (!entry?.resetsAt) return undefined
+        const targetAt = Date.parse(entry.resetsAt)
+        if (Number.isNaN(targetAt)) return undefined
+        let timer = null
+        const schedule = () => {
+          if (typeof document !== 'undefined' && document.visibilityState === 'hidden') return
+          const delta = targetAt - Date.now()
+          setNow(Date.now())
+          if (delta > 0) {
+            const delay = delta < 3600_000 ? 1000 : 30_000
+            timer = setTimeout(schedule, delay)
+          }
+        }
+        const onVis = () => {
+          if (document.visibilityState === 'visible') schedule()
+        }
+        const delta = targetAt - Date.now()
+        if (delta > 0 && (typeof document === 'undefined' || document.visibilityState === 'visible')) {
+          timer = setTimeout(schedule, delta < 3600_000 ? 1000 : 30_000)
+        }
+        if (typeof document !== 'undefined') {
+          document.addEventListener('visibilitychange', onVis)
+        }
+        return () => {
+          if (timer) clearTimeout(timer)
+          if (typeof document !== 'undefined') {
+            document.removeEventListener('visibilitychange', onVis)
+          }
+        }
+      }, [entry?.resetsAt])
+
+      const reset = resetText(entry?.resetsAt, now)
       const [grown, setGrown] = useState(false)
 
       useEffect(() => {
@@ -802,14 +1035,24 @@ window.__ModuleLoader__.load({
               },
               props.title,
             ),
+            left !== undefined && left <= 15
+              ? h('span', { className: 'ogq-warn-badge', title: 'Low quota: under 15% remaining' })
+              : null,
           ),
           h(
             'span',
             { style: { display: 'flex', alignItems: 'baseline', gap: t.meter.valueGap, whiteSpace: 'nowrap' } },
-            h('span', { style: { ...TYPE.value, color: c.textPrimary } }, left === undefined ? '—' : `${Math.round(left)}%`),
+            h('span', { style: { ...TYPE.value, color: left !== undefined && left <= 15 ? c.stateWarning : c.textPrimary } }, left === undefined ? '—' : `${Math.round(left)}%`),
             h(
               'span',
-              { style: { ...TYPE.bodySmall, color: c.countdownInk, whiteSpace: 'nowrap' } },
+              {
+                style: {
+                  ...TYPE.bodySmall,
+                  color: left !== undefined && left <= 15 ? c.stateWarning : c.countdownInk,
+                  fontWeight: left !== undefined && left <= 15 ? 750 : TYPE.bodySmall.fontWeight,
+                  whiteSpace: 'nowrap',
+                },
+              },
               reset === '' ? 'left' : `left · ${reset}`,
             ),
           ),
@@ -932,6 +1175,202 @@ window.__ModuleLoader__.load({
       return typeof key === 'string' && key.length > 0 ? key[0].toUpperCase() : '·'
     }
 
+    const CORNERS = ['bottom-right', 'bottom-left', 'top-left', 'top-right']
+    const DEFAULT_SHORTCUT = 'Alt+Shift+B'
+
+    function getSavedShortcut() {
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) {
+          const s = window.localStorage.getItem('dsh-quota-bubble:shortcut')
+          if (typeof s === 'string' && s.trim().length > 0) return s.trim()
+        }
+      } catch {}
+      return DEFAULT_SHORTCUT
+    }
+
+    function setSavedShortcut(sc) {
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) {
+          window.localStorage.setItem('dsh-quota-bubble:shortcut', sc)
+          window.dispatchEvent(new CustomEvent('quota-bubble-settings-changed', { detail: { shortcut: sc } }))
+        }
+      } catch {}
+    }
+
+    function matchShortcut(e, shortcutStr) {
+      if (!shortcutStr || !e) return false
+      const parts = shortcutStr.split('+').map((p) => p.trim().toLowerCase())
+      const needAlt = parts.includes('alt') || parts.includes('option')
+      const needShift = parts.includes('shift')
+      const needCtrl = parts.includes('ctrl') || parts.includes('control')
+      const needMeta = parts.includes('cmd') || parts.includes('command') || parts.includes('meta')
+      const keyPart = parts.find((p) => !['alt', 'option', 'shift', 'ctrl', 'control', 'cmd', 'command', 'meta'].includes(p))
+
+      if (Boolean(e.altKey) !== needAlt) return false
+      if (Boolean(e.shiftKey) !== needShift) return false
+      if (Boolean(e.ctrlKey) !== needCtrl) return false
+      if (Boolean(e.metaKey) !== needMeta) return false
+
+      if (!keyPart) return false
+      const eventKey = (e.key || '').toLowerCase()
+      const eventCode = (e.code || '').toLowerCase()
+
+      if (eventKey === keyPart) return true
+      if (eventCode === `key${keyPart}`) return true
+      if (eventCode === keyPart) return true
+      return false
+    }
+
+    function getDockCorner() {
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) {
+          const saved = window.localStorage.getItem('dsh-quota-bubble:corner')
+          if (CORNERS.includes(saved)) return saved
+        }
+      } catch {}
+      return 'bottom-right'
+    }
+
+    function setDockCorner(corner) {
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) {
+          window.localStorage.setItem('dsh-quota-bubble:corner', corner)
+        }
+      } catch {}
+    }
+
+    function computeDockPosition(corner, dragOffset) {
+      if (dragOffset) {
+        return {
+          position: 'fixed',
+          left: `${dragOffset.x}px`,
+          top: `${dragOffset.y}px`,
+          zIndex: 900,
+          pointerEvents: 'auto',
+        }
+      }
+      const isTop = corner.startsWith('top')
+      const isLeft = corner.endsWith('left')
+      return {
+        position: 'fixed',
+        ...(isTop ? { top: `${LAYOUT.edge}px` } : { bottom: `${LAYOUT.edge}px` }),
+        ...(isLeft ? { left: `${LAYOUT.edge}px` } : { right: `${LAYOUT.edge}px` }),
+        zIndex: 900,
+        pointerEvents: 'auto',
+      }
+    }
+
+    function useDraggable(corner, onCornerChange) {
+      const [dragOffset, setDragOffset] = useState(null)
+      const dragging = useRef(null)
+
+      const onPointerDown = useCallback((e) => {
+        if (e.button !== 0 || e.target.closest('button.ogq-icon-button') || e.target.closest('button[data-ogq-action]')) return
+        const node = e.currentTarget.closest('.ogq-stack') || e.currentTarget.closest('.ogq-pill') || e.currentTarget
+        const rect = node.getBoundingClientRect()
+        dragging.current = {
+          startX: e.clientX,
+          startY: e.clientY,
+          initialLeft: rect.left,
+          initialTop: rect.top,
+          moved: false,
+        }
+        try { e.currentTarget.setPointerCapture?.(e.pointerId) } catch {}
+      }, [])
+
+      const onPointerMove = useCallback((e) => {
+        if (!dragging.current) return
+        const dx = e.clientX - dragging.current.startX
+        const dy = e.clientY - dragging.current.startY
+        if (!dragging.current.moved && Math.hypot(dx, dy) < 4) return
+        dragging.current.moved = true
+        setDragOffset({
+          x: Math.max(8, Math.min((typeof window !== 'undefined' ? window.innerWidth : 1200) - 320, dragging.current.initialLeft + dx)),
+          y: Math.max(8, Math.min((typeof window !== 'undefined' ? window.innerHeight : 800) - 80, dragging.current.initialTop + dy)),
+        })
+      }, [])
+
+      const onPointerUp = useCallback((e) => {
+        try { e?.currentTarget?.releasePointerCapture?.(e.pointerId) } catch {}
+        if (!dragging.current) return
+        if (dragging.current.moved && dragOffset) {
+          const cx = dragOffset.x + 150
+          const cy = dragOffset.y + 100
+          const isTop = cy < (typeof window !== 'undefined' ? window.innerHeight : 800) / 2
+          const isLeft = cx < (typeof window !== 'undefined' ? window.innerWidth : 1200) / 2
+          const snapped = `${isTop ? 'top' : 'bottom'}-${isLeft ? 'left' : 'right'}`
+          onCornerChange(snapped)
+          setDragOffset(null)
+        }
+        dragging.current = null
+      }, [dragOffset, onCornerChange])
+
+      return { dragOffset, onPointerDown, onPointerMove, onPointerUp }
+    }
+
+    function useTheme() {
+      const [theme, setTheme] = useState(() => {
+        if (typeof document === 'undefined') return 'light'
+        if (
+          document.body?.hasAttribute('data-ds-dark-theme') ||
+          document.body?.getAttribute('data-theme') === 'dark' ||
+          document.documentElement?.getAttribute('data-theme') === 'dark' ||
+          document.documentElement?.classList?.contains('dark') ||
+          document.body?.classList?.contains('dark')
+        ) return 'dark'
+        if (typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          return 'dark'
+        }
+        return 'light'
+      })
+
+      useEffect(() => {
+        if (typeof document === 'undefined') return undefined
+        const check = () => {
+          const isDark =
+            document.body?.hasAttribute('data-ds-dark-theme') ||
+            document.body?.getAttribute('data-theme') === 'dark' ||
+            document.documentElement?.getAttribute('data-theme') === 'dark' ||
+            document.documentElement?.classList?.contains('dark') ||
+            document.body?.classList?.contains('dark') ||
+            (typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+          setTheme(isDark ? 'dark' : 'light')
+        }
+        const observer = new MutationObserver(check)
+        if (document.body) observer.observe(document.body, { attributes: true, attributeFilter: ['data-ds-dark-theme', 'data-theme', 'class'] })
+        if (document.documentElement) observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class'] })
+        let mql
+        if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+          mql = window.matchMedia('(prefers-color-scheme: dark)')
+          if (typeof mql.addEventListener === 'function') mql.addEventListener('change', check)
+        }
+        return () => {
+          observer.disconnect()
+          if (mql && typeof mql.removeEventListener === 'function') mql.removeEventListener('change', check)
+        }
+      }, [])
+
+      return theme
+    }
+
+    function getSessionMetrics(ctx, sessionId) {
+      if (!ctx || !sessionId) return undefined
+      try {
+        const sessions = getContextService(ctx, 'sessions') ?? getContextService(ctx, 'uiSession')?.sessions
+        const s = sessions?.binding?.(sessionId)?.session ?? sessions?.get?.(sessionId)
+        if (s) {
+          const msgs = s.messages ?? s.history?.messages ?? []
+          const turns = Array.isArray(msgs) ? msgs.filter((m) => m?.role === 'user' || m?.type === 'user').length : 0
+          const stats = s.stats ?? s.tokenStats
+          const totalTokens = stats?.totalTokens ?? stats?.tokens ?? s.tokenCount
+          if (turns > 0 || (typeof totalTokens === 'number' && totalTokens > 0)) {
+            return { turns, totalTokens }
+          }
+        }
+      } catch {}
+      return undefined
+    }
+
     function CollapsedPill(props) {
       const c = props.colors
       const t = componentTokens(false)
@@ -945,12 +1384,16 @@ window.__ModuleLoader__.load({
           tone: toneFor(c, left, window.status),
         }
       })
+      const isLowQuota =
+        metrics.some((m) => m.left !== undefined && m.left <= 15) ||
+        (typeof props.primaryLeft === 'number' && props.primaryLeft <= 15)
       const ariaLabel =
         metrics.length === 0
           ? `Show ${props.label} usage`
           : `Show ${props.label} usage: ${metrics
               .map((metric) => `${metric.label} ${metric.left === undefined ? 'unknown' : `${Math.round(metric.left)}% left`}`)
               .join(', ')}`
+      const dockPos = computeDockPosition(props.corner ?? 'bottom-right', props.dragOffset)
       return h(
         'button',
         {
@@ -960,15 +1403,14 @@ window.__ModuleLoader__.load({
           'aria-expanded': false,
           'aria-controls': 'ogq-quota-card',
           onClick: props.onExpand,
+          onPointerDown: props.onPointerDown,
+          onPointerMove: props.onPointerMove,
+          onPointerUp: props.onPointerUp,
           'aria-label': ariaLabel,
           'data-quota-pill-metrics': metrics.length,
-          title: ariaLabel,
+          title: `${ariaLabel} · Drag to reposition · ${props.shortcut ?? 'Alt+Shift+B'} to toggle`,
           style: {
-            position: 'fixed',
-            right: LAYOUT.edge,
-            bottom: LAYOUT.edge,
-            zIndex: 900,
-            pointerEvents: 'auto',
+            ...dockPos,
             display: 'flex',
             alignItems: 'center',
             gap: t.pill.gap,
@@ -983,12 +1425,15 @@ window.__ModuleLoader__.load({
             backdropFilter: 'blur(14px)',
             color: c.textPrimary,
             ...TYPE.pill,
-            cursor: 'pointer',
+            cursor: 'grab',
             animation: 'ogq-pop 260ms cubic-bezier(.2,.9,.3,1.15) both',
-            transition: 'transform 160ms ease',
+            transition: props.dragOffset ? 'none' : 'transform 160ms ease',
           },
         },
         h(props.mark, { size: 20, decorative: true }),
+        isLowQuota
+          ? h('span', { className: 'ogq-warn-badge', title: 'Low quota warning: under 15% remaining' })
+          : null,
         h('span', { style: { whiteSpace: 'nowrap' } }, props.label),
         metrics.length === 0
           ? h(
@@ -1034,28 +1479,94 @@ window.__ModuleLoader__.load({
     }
 
     function GoldRibbon(props) {
+      const isDark = props.theme === 'dark'
+      const gradId = isDark ? 'ogq-caustic-dark' : 'ogq-caustic-light'
       return h(
         'span',
-        { className: 'ogq-ribbon', 'aria-hidden': true, style: { filter: props.filter } },
+        {
+          className: 'ogq-ribbon',
+          'aria-hidden': true,
+          style: {
+            filter: props.filter,
+            opacity: isDark ? 0.75 : 0.95,
+            mixBlendMode: isDark ? 'screen' : 'normal',
+            zIndex: 1,
+          },
+        },
         h(
           'svg',
-          { viewBox: '0 0 260 90', preserveAspectRatio: 'none', width: '100%', height: '100%', fill: 'none' },
+          { viewBox: '0 0 170 150', preserveAspectRatio: 'xMaxYMin meet', width: '100%', height: '100%', fill: 'none' },
           h(
             'defs',
             null,
-            h(
-              'linearGradient',
-              { id: 'ogq-gold', x1: '0', y1: '0', x2: '1', y2: '1' },
-              h('stop', { offset: '0%', stopColor: '#fff6dd' }),
-              h('stop', { offset: '28%', stopColor: '#dcb56a' }),
-              h('stop', { offset: '46%', stopColor: '#fff8e8' }),
-              h('stop', { offset: '64%', stopColor: '#c89644' }),
-              h('stop', { offset: '100%', stopColor: '#f7e7c2' }),
-            ),
+            isDark
+              ? h(
+                  'linearGradient',
+                  { id: gradId, x1: '0%', y1: '0%', x2: '100%', y2: '100%' },
+                  h('stop', { offset: '0%', stopColor: '#c8973f', stopOpacity: 0 }),
+                  h('stop', { offset: '25%', stopColor: '#d9ae5c', stopOpacity: 0.38 }),
+                  h('stop', { offset: '50%', stopColor: '#fff6dd', stopOpacity: 0.95 }),
+                  h('stop', { offset: '75%', stopColor: '#d9ae5c', stopOpacity: 0.38 }),
+                  h('stop', { offset: '100%', stopColor: '#c8973f', stopOpacity: 0 }),
+                )
+              : h(
+                  'linearGradient',
+                  { id: gradId, x1: '0%', y1: '0%', x2: '100%', y2: '100%' },
+                  h('stop', { offset: '0%', stopColor: '#c8973f', stopOpacity: 0 }),
+                  h('stop', { offset: '25%', stopColor: '#d9ae5c', stopOpacity: 0.5 }),
+                  h('stop', { offset: '50%', stopColor: '#fff6dd', stopOpacity: 1.0 }),
+                  h('stop', { offset: '75%', stopColor: '#c8973f', stopOpacity: 0.5 }),
+                  h('stop', { offset: '100%', stopColor: '#a97b2a', stopOpacity: 0 }),
+                ),
           ),
-          h('path', { d: 'M-8 52 C48 12 132 -6 268 16', stroke: 'url(#ogq-gold)', strokeWidth: 3, strokeLinecap: 'round', opacity: 1 }),
-          h('path', { d: 'M-8 68 C70 24 160 4 268 28', stroke: 'url(#ogq-gold)', strokeWidth: 1.4, strokeLinecap: 'round', opacity: 0.65 }),
-          h('path', { d: 'M12 84 C96 40 190 26 268 44', stroke: 'url(#ogq-gold)', strokeWidth: 0.9, strokeLinecap: 'round', opacity: 0.32 }),
+          // Option A: Concentric Caustic Arcs (Linear / Raycast style)
+          // Soft ambient caustic underglow layer
+          h('path', {
+            d: 'M 115 4 C 146 4, 166 24, 166 55',
+            stroke: `url(#${gradId})`,
+            strokeWidth: 3,
+            opacity: isDark ? 0.22 : 0.3,
+            strokeLinecap: 'round',
+          }),
+          h('path', {
+            d: 'M 85 12 C 128 12, 158 42, 158 85',
+            stroke: `url(#${gradId})`,
+            strokeWidth: 3.5,
+            opacity: isDark ? 0.28 : 0.35,
+            strokeLinecap: 'round',
+          }),
+          h('path', {
+            d: 'M 55 20 C 110 20, 150 60, 150 115',
+            stroke: `url(#${gradId})`,
+            strokeWidth: 3,
+            opacity: isDark ? 0.2 : 0.25,
+            strokeLinecap: 'round',
+          }),
+          // Precision hairlines echoing the 38px rounded corner geometry
+          // Inner hairline: hugs the corner boundary
+          h('path', {
+            d: 'M 115 4 C 146 4, 166 24, 166 55',
+            stroke: `url(#${gradId})`,
+            strokeWidth: 0.85,
+            opacity: isDark ? 0.65 : 0.7,
+            strokeLinecap: 'round',
+          }),
+          // Core caustic hero hairline: weaves between header controls
+          h('path', {
+            d: 'M 85 12 C 128 12, 158 42, 158 85',
+            stroke: `url(#${gradId})`,
+            strokeWidth: 1.2,
+            opacity: 1.0,
+            strokeLinecap: 'round',
+          }),
+          // Outer horizon hairline: frames controls and dissolves into card
+          h('path', {
+            d: 'M 55 20 C 110 20, 150 60, 150 115',
+            stroke: `url(#${gradId})`,
+            strokeWidth: 0.75,
+            opacity: isDark ? 0.5 : 0.55,
+            strokeLinecap: 'round',
+          }),
         ),
       )
     }
@@ -1067,6 +1578,31 @@ window.__ModuleLoader__.load({
       const phase = props.phase === undefined ? 'visible' : props.phase
       const dense = props.dense === true
       const t = componentTokens(dense)
+      const sessionBaselines = useRef(new Map())
+      const [clockNow, setClockNow] = useState(() => Date.now())
+
+      useEffect(() => {
+        let timer = null
+        const tick = () => {
+          if (typeof document === 'undefined' || document.visibilityState === 'visible') {
+            setClockNow(Date.now())
+          }
+        }
+        timer = setInterval(tick, 10_000)
+        const onVis = () => {
+          if (document.visibilityState === 'visible') tick()
+        }
+        if (typeof document !== 'undefined') {
+          document.addEventListener('visibilitychange', onVis)
+        }
+        return () => {
+          clearInterval(timer)
+          if (typeof document !== 'undefined') {
+            document.removeEventListener('visibilitychange', onVis)
+          }
+        }
+      }, [])
+
       const stars = useMemo(() => {
         const list = []
         for (let index = 0; index < 22; index += 1) {
@@ -1083,6 +1619,30 @@ window.__ModuleLoader__.load({
       }, [])
       const providerInfo = state.data?.provider
       const windows = state.data?.usage?.windows ?? []
+      const primaryWindow = windows.find((w) => w.key === 'rolling') ?? windows[0]
+      const primaryLeft = leftOf(primaryWindow)
+      const sessionId = props.sessionId ?? 'default'
+
+      useEffect(() => {
+        if (typeof primaryLeft !== 'number' || !props.sessionMetrics) return
+        if (!sessionBaselines.current.has(sessionId)) {
+          if (sessionBaselines.current.size > 30) {
+            const oldest = sessionBaselines.current.keys().next().value
+            sessionBaselines.current.delete(oldest)
+          }
+          sessionBaselines.current.set(sessionId, {
+            startLeft: primaryLeft,
+            startTurns: props.sessionMetrics.turns,
+            at: Date.now(),
+          })
+        }
+      }, [sessionId, primaryLeft, props.sessionMetrics?.turns])
+
+      const runwayInfo = useMemo(() => {
+        const baseline = sessionBaselines.current.get(sessionId)
+        return computeSessionRunway(primaryLeft, props.sessionMetrics, baseline)
+      }, [primaryLeft, props.sessionMetrics, sessionId])
+
       const modelId = state.data?.runningModel?.model
       const provider = state.data?.runningModel?.provider
       const probedName = state.data?.runningModel?.displayName
@@ -1108,9 +1668,11 @@ window.__ModuleLoader__.load({
                 ? 'Usage endpoint unreachable.'
                 : state.error === 'unreachable'
                   ? 'Host route unreachable.'
-                  : state.error !== undefined
-                    ? `Usage endpoint returned ${state.error}.`
-                    : state.data?.note
+                  : state.error === 'unexpected-response'
+                    ? 'Usage endpoint returned an unexpected answer.'
+                    : state.error !== undefined
+                      ? `Usage endpoint returned ${state.error}.`
+                      : state.data?.note
 
       const vars = {
         '--ogq-focus': c.focusRing,
@@ -1157,7 +1719,7 @@ window.__ModuleLoader__.load({
               : providerInfo.usageApi === true
                 ? providerInfo.usageSource ?? 'true'
                 : 'false',
-          'data-quota-theme': 'light',
+          'data-quota-theme': props.theme ?? 'light',
           'aria-label': `${providerInfo === undefined ? 'Provider' : providerInfo.label} usage`,
           onKeyDown: (event) => {
             if (event.key === 'Escape') {
@@ -1170,6 +1732,7 @@ window.__ModuleLoader__.load({
             zIndex: 2,
             width: '100%',
             borderRadius: t.base.radius,
+            border: props.theme === 'dark' ? '1px solid rgba(169,139,255,0.22)' : '1px solid rgba(255,255,255,0.85)',
             background: c[t.base.surface],
             boxShadow: c[t.base.shadow],
             color: c.textPrimary,
@@ -1199,10 +1762,15 @@ window.__ModuleLoader__.load({
             ),
           ),
         ),
-        h(GoldRibbon, { filter: c.ribbonFilter }),
+        h(GoldRibbon, { filter: c.ribbonFilter, theme: props.theme }),
         h(
           'div',
-          { style: { position: 'relative', zIndex: 2, display: 'flex', alignItems: 'flex-start', gap: t.card.gap } },
+          {
+            style: { position: 'relative', zIndex: 2, display: 'flex', alignItems: 'flex-start', gap: t.card.gap, cursor: 'grab' },
+            onPointerDown: props.onPointerDown,
+            onPointerMove: props.onPointerMove,
+            onPointerUp: props.onPointerUp,
+          },
           h(
             'div',
             {
@@ -1228,10 +1796,16 @@ window.__ModuleLoader__.load({
                 {
                   style: {
                     ...TYPE.title,
+                    position: 'relative',
+                    zIndex: 3,
                     color: c.textPrimary,
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
+                    textShadow:
+                      props.theme === 'dark'
+                        ? '0 1px 4px rgba(15,10,30,0.95), 0 0 8px rgba(20,12,40,0.95), 0 0 2px rgba(0,0,0,0.9)'
+                        : '0 1px 2px rgba(255,255,255,0.8)',
                   },
                 },
                 providerInfo === undefined ? 'Provider quota' : providerInfo.label,
@@ -1245,14 +1819,22 @@ window.__ModuleLoader__.load({
                   ? 'offline'
                   : providerInfo !== undefined && providerInfo.usageApi === true
                     ? 'live'
-                    : 'static',
+                    : providerInfo !== undefined && providerInfo.usageEmpty === true
+                      ? 'nodata'
+                      : 'static',
             }),
           ),
           h(
             'span',
-            { style: { marginLeft: 'auto' } },
+            { style: { marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4 } },
             h(IconButton, {
-              title: 'Collapse quota bubble',
+              title: `Dock corner: ${props.corner ?? 'bottom-right'} (click to cycle)`,
+              path: 'M2.5 2.5h4v4h-4zm7 0h4v4h-4zm-7 7h4v4h-4zm7 0h4v4h-4z',
+              strokeWidth: 1.4,
+              onClick: () => props.onCycleCorner && props.onCycleCorner(),
+            }),
+            h(IconButton, {
+              title: `Collapse quota bubble (${props.shortcut ?? 'Alt+Shift+B'})`,
               path: 'M4 10l4-4 4 4',
               expanded: true,
               controls: 'ogq-quota-card',
@@ -1261,7 +1843,15 @@ window.__ModuleLoader__.load({
           ),
         ),
         ...windows.map((window, index) =>
-          h(Meter, { key: window.key, index, title: window.label, entry: window, dense, colors: c }),
+          h(Meter, {
+            key: window.key,
+            index,
+            title: window.label,
+            entry: window,
+            dense,
+            colors: c,
+            runway: index === 0 ? runwayInfo : undefined,
+          }),
         ),
         balance === null
           ? null
@@ -1310,6 +1900,133 @@ window.__ModuleLoader__.load({
               },
               note,
             ),
+        props.poolInfo && props.poolInfo.totalAccounts > 1
+          ? h(
+              'div',
+              {
+                className: 'ogq-account-chip',
+                style: {
+                  position: 'relative',
+                  zIndex: 2,
+                  marginTop: t.panel.gap,
+                  background: c.panelGradient,
+                  boxShadow: c.panelShadow,
+                  color: c.textPrimary,
+                },
+              },
+              h(
+                'div',
+                { style: { display: 'flex', alignItems: 'center', gap: 6, minWidth: 0, overflow: 'hidden' } },
+                h('span', { style: { fontSize: 13, flex: '0 0 auto' } }, '👤'),
+                h(
+                  'span',
+                  {
+                    style: {
+                      textOverflow: 'ellipsis',
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      color: c.textPrimary,
+                    },
+                    title: toSentenceCase(props.poolInfo.activeEmail ?? props.poolInfo.activeId),
+                  },
+                  toSentenceCase(props.poolInfo.activeEmail ?? props.poolInfo.activeId),
+                ),
+                h(
+                  'span',
+                  { style: { fontSize: 10, color: c.countdownInk, flex: '0 0 auto' } },
+                  `(${props.poolInfo.eligibleCount}/${props.poolInfo.totalAccounts} ready)`,
+                ),
+              ),
+              props.poolInfo.nextEligibleId
+                ? h(
+                    'button',
+                    {
+                      type: 'button',
+                      className: 'ogq-icon-button',
+                      style: {
+                        width: 'auto',
+                        height: 22,
+                        padding: '0 8px',
+                        borderRadius: 999,
+                        fontSize: 10,
+                        fontWeight: 700,
+                        flex: '0 0 auto',
+                      },
+                      title: `Switch to next account in pool (${props.poolInfo.nextEligibleId})`,
+                      onClick: async (e) => {
+                        e.stopPropagation()
+                        try {
+                          await fetch('/plugins/agy-link/pool/set-active', {
+                            method: 'POST',
+                            headers: { 'content-type': 'application/json' },
+                            body: JSON.stringify({ id: props.poolInfo.nextEligibleId }),
+                          })
+                          props.onRefresh()
+                        } catch {}
+                      },
+                    },
+                    'Switch',
+                  )
+                : null,
+            )
+          : null,
+        props.sessionMetrics
+          ? h(
+              'div',
+              {
+                className: 'ogq-session-chip',
+                style: {
+                  position: 'relative',
+                  zIndex: 2,
+                  marginTop: t.panel.gap,
+                  background: c.panelGradient,
+                  boxShadow: c.panelShadow,
+                  color: c.textMuted,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 6,
+                },
+              },
+              h(
+                'span',
+                { style: { display: 'flex', alignItems: 'center', gap: 4, minWidth: 0 } },
+                h('span', { style: { color: c.sparkleWarm, flex: '0 0 auto' } }, '⚡'),
+                h(
+                  'span',
+                  { style: { whiteSpace: 'nowrap' } },
+                  `Session: ${props.sessionMetrics.turns} turn${props.sessionMetrics.turns === 1 ? '' : 's'}`,
+                ),
+                runwayInfo
+                  ? h(
+                      'span',
+                      {
+                        title: runwayInfo.tooltip,
+                        style: {
+                          marginLeft: 4,
+                          padding: '1px 5px',
+                          borderRadius: 6,
+                          fontSize: 10,
+                          fontWeight: 700,
+                          whiteSpace: 'nowrap',
+                          background: runwayInfo.isLow ? 'rgba(239,68,68,0.18)' : 'rgba(217,174,92,0.18)',
+                          color: runwayInfo.isLow ? c.stateWarning : c.sparkleWarm,
+                          border: runwayInfo.isLow ? '1px solid rgba(239,68,68,0.35)' : '1px solid rgba(217,174,92,0.35)',
+                        },
+                      },
+                      runwayInfo.badge,
+                    )
+                  : null,
+              ),
+              props.sessionMetrics.totalTokens
+                ? h(
+                    'span',
+                    { style: { fontVariantNumeric: 'tabular-nums', opacity: 0.85, whiteSpace: 'nowrap', flex: '0 0 auto' } },
+                    `${props.sessionMetrics.totalTokens.toLocaleString()} tokens`,
+                  )
+                : null,
+            )
+          : null,
         h(
           'div',
           {
@@ -1362,7 +2079,7 @@ window.__ModuleLoader__.load({
             h(
               'span',
               { style: { ...TYPE.caption, color: c.creditInk, whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' } },
-              updatedText(state.at),
+              updatedText(state.at, clockNow),
             ),
             h(IconButton, {
               title: 'Refresh quota now',
@@ -1381,7 +2098,7 @@ window.__ModuleLoader__.load({
               position: 'relative',
               zIndex: 2,
               display: 'flex',
-              alignItems: 'baseline',
+              alignItems: 'center',
               justifyContent: 'space-between',
               gap: SPACE.sm,
               marginTop: t.credit.gap,
@@ -1390,7 +2107,72 @@ window.__ModuleLoader__.load({
               whiteSpace: 'nowrap',
             },
           },
-          h('span', { 'data-quota-version': PLUGIN_VERSION }, `v${PLUGIN_VERSION}`),
+          h(
+            'span',
+            {
+              'data-quota-version': PLUGIN_VERSION,
+              style: {
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 5,
+                cursor: 'pointer',
+                userSelect: 'none',
+              },
+              title:
+                props.updateInfo?.status === 'update-available'
+                  ? `New version v${props.updateInfo.latestVersion} available! Click to view update.`
+                  : `v${PLUGIN_VERSION} · Up to date (click to check for updates)`,
+              onClick: () => {
+                if (props.updateInfo?.status === 'update-available') {
+                  if (typeof window !== 'undefined') {
+                    window.open('https://github.com/Kadomis/dsh-quota-bubble/releases', '_blank')
+                  }
+                } else if (props.onCheckUpdate) {
+                  props.onCheckUpdate(true)
+                }
+              },
+            },
+            h('span', null, `v${PLUGIN_VERSION}`),
+            props.updateInfo?.status === 'update-available'
+              ? h(
+                  'span',
+                  {
+                    style: {
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 2,
+                      padding: '1px 6px',
+                      borderRadius: 999,
+                      fontSize: 9,
+                      fontWeight: 700,
+                      background: 'linear-gradient(135deg, #10B981, #059669)',
+                      color: '#FFFFFF',
+                      boxShadow: '0 0 6px rgba(16,185,129,0.5)',
+                    },
+                  },
+                  `Update v${props.updateInfo.latestVersion} ↗`,
+                )
+              : props.updateInfo?.status === 'up-to-date'
+                ? h(
+                    'span',
+                    {
+                      style: {
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 3,
+                        fontSize: 9,
+                        fontWeight: 600,
+                        color: c.stateSuccess,
+                        opacity: 0.85,
+                      },
+                    },
+                    h('span', {
+                      style: { width: 4.5, height: 4.5, borderRadius: 999, background: c.stateSuccess, display: 'inline-block' },
+                    }),
+                    'up to date',
+                  )
+                : null,
+          ),
           h('span', { 'data-quota-brand': 'credit' }, 'Quota Bubble by Syzygy'),
         ),
         h(
@@ -1404,11 +2186,187 @@ window.__ModuleLoader__.load({
     const BURST_MS = 340
     const BLOW_MS = 640
 
-    function QuotaBubble() {
+    function getContextService(ctx, name) {
+      if (!ctx) return undefined
+      try {
+        if (ctx.reflect && typeof ctx.reflect.get === 'function') {
+          return ctx.reflect.get(name, false)
+        }
+      } catch {}
+      try {
+        if (typeof ctx.get === 'function') {
+          return ctx.get(name)
+        }
+      } catch {}
+      try {
+        return ctx[name]
+      } catch {}
+      return undefined
+    }
+
+    function getActiveSessionId(ctx) {
+      if (!ctx) return undefined
+      try {
+        const uiSession = getContextService(ctx, 'uiSession')
+        const cur = uiSession?.current?.value ?? uiSession?.current?.getSnapshot?.()
+        if (cur && typeof cur.key === 'string' && cur.key.length > 0) {
+          return cur.key
+        }
+      } catch {}
+      try {
+        const sessions = getContextService(ctx, 'sessions') ?? getContextService(ctx, 'uiSession')?.sessions
+        const snapshot = sessions?.list?.getSnapshot ? sessions.list.getSnapshot() : sessions?.list
+        const byId = snapshot?.byId ?? {}
+        const hit = Object.values(byId).find((s) => (s?.retainedBy?.mainView ?? 0) > 0)
+        if (hit && typeof hit.id === 'string') return hit.id
+      } catch {}
+      return undefined
+    }
+
+    function getActiveSession(ctx) {
+      const id = getActiveSessionId(ctx)
+      return id ? { id } : undefined
+    }
+
+    function getSessionModel(ctx, sessionId) {
+      if (!ctx || !sessionId) return undefined
+      try {
+        const md = getContextService(ctx, 'modelDirectories')
+        const dir = md?.directoryFor?.(sessionId)
+        const cur = dir?.store?.getSnapshot?.()?.current ?? dir?.store?.current
+        if (cur && typeof cur.provider === 'string' && typeof cur.model === 'string') {
+          return {
+            provider: cur.provider,
+            model: cur.model,
+            reasoningEffort: typeof cur.reasoningEffort === 'string' ? cur.reasoningEffort : undefined,
+          }
+        }
+      } catch {}
+      try {
+        const sessions = getContextService(ctx, 'sessions') ?? getContextService(ctx, 'uiSession')?.sessions
+        const binding = sessions?.binding?.(sessionId)
+        const face = binding?.session?.projections?.faceOf?.('modelSelection')
+        const proj = face?.getSnapshot?.() ?? face?.value
+        const sel = proj?.current ?? proj?.next ?? proj?.lastUsed ?? proj
+        if (sel && typeof sel.provider === 'string' && typeof sel.model === 'string') {
+          return {
+            provider: sel.provider,
+            model: sel.model,
+            reasoningEffort: typeof sel.reasoningEffort === 'string' ? sel.reasoningEffort : undefined,
+          }
+        }
+      } catch {}
+      try {
+        const sessions = getContextService(ctx, 'sessions') ?? getContextService(ctx, 'uiSession')?.sessions
+        const snapshot = sessions?.list?.getSnapshot?.() ?? sessions?.list
+        const info = snapshot?.byId?.[sessionId]
+        const pv = info?.projectionValues?.modelSelection
+        const sel = pv?.current ?? pv?.next ?? pv?.lastUsed ?? pv
+        if (sel && typeof sel.provider === 'string' && typeof sel.model === 'string') {
+          return {
+            provider: sel.provider,
+            model: sel.model,
+            reasoningEffort: typeof sel.reasoningEffort === 'string' ? sel.reasoningEffort : undefined,
+          }
+        }
+      } catch {}
+      return undefined
+    }
+
+    let clientCtx
+
+    function QuotaBubble(props) {
+      const activeSessionInfo = typeof props?.useSessions === 'function' ? props.useSessions((state) => {
+        if (!state?.byId) return ''
+        const active = Object.values(state.byId).find((s) => (s?.retainedBy?.mainView ?? 0) > 0)
+        if (!active) return ''
+        const sid = active.id ?? ''
+        const pv = active.projectionValues?.modelSelection
+        const proj = state.projectionsBySession?.[sid]?.values?.modelSelection
+        const sel = pv?.next ?? pv?.current ?? pv?.lastUsed ?? proj?.next ?? proj?.current ?? proj?.lastUsed
+        return `${sid}|${sel?.provider ?? ''}|${sel?.model ?? ''}|${sel?.reasoningEffort ?? ''}`
+      }) : ''
+
+      const ctx = props?.ctx ?? clientCtx
+
+      let activeSessionId
+      let activeModel
+
+      if (typeof activeSessionInfo === 'string' && activeSessionInfo.length > 0) {
+        const [sid, prov, mod, eff] = activeSessionInfo.split('|')
+        if (sid) activeSessionId = sid
+        if (prov && mod) {
+          activeModel = { provider: prov, model: mod, reasoningEffort: eff || undefined }
+        }
+      }
+
+      if (!activeSessionId) {
+        activeSessionId = getActiveSessionId(ctx)
+      }
+      if (!activeModel && activeSessionId) {
+        activeModel = getSessionModel(ctx, activeSessionId)
+      }
+
       const dense = useCompactDensity()
-      const c = COLORS.light
+      const theme = useTheme()
+      const c = COLORS[theme] ?? COLORS.light
       const t = componentTokens(dense)
+      const [corner, setCorner] = useState(getDockCorner)
+      const onCycleCorner = useCallback(() => {
+        setCorner((prev) => {
+          const next = CORNERS[(CORNERS.indexOf(prev) + 1) % CORNERS.length]
+          setDockCorner(next)
+          return next
+        })
+      }, [])
+      const { dragOffset, onPointerDown, onPointerMove, onPointerUp } = useDraggable(corner, (snapped) => {
+        setCorner(snapped)
+        setDockCorner(snapped)
+      })
+
       const [state, setState] = useState({ data: undefined, error: undefined, loading: true, at: 0 })
+      const sessionMetrics = useMemo(() => getSessionMetrics(ctx, activeSessionId), [ctx, activeSessionId, state.at])
+      const [currentShortcut, setCurrentShortcut] = useState(getSavedShortcut)
+      const [updateInfo, setUpdateInfo] = useState({ status: 'checking', latestVersion: PLUGIN_VERSION })
+
+      const onCheckUpdate = useCallback((force) => {
+        setUpdateInfo((prev) => ({ ...prev, status: 'checking' }))
+        checkPluginUpdate(force).then((res) => {
+          if (alive.current) setUpdateInfo(res)
+        })
+      }, [])
+
+      useEffect(() => {
+        checkPluginUpdate(false).then((res) => {
+          if (alive.current) setUpdateInfo(res)
+        })
+      }, [])
+
+      useEffect(() => {
+        const onSettingsChanged = (e) => {
+          setCurrentShortcut(getSavedShortcut())
+          if (e?.detail?.corner && CORNERS.includes(e.detail.corner)) {
+            setCorner(e.detail.corner)
+          }
+        }
+        window.addEventListener('quota-bubble-settings-changed', onSettingsChanged)
+        return () => window.removeEventListener('quota-bubble-settings-changed', onSettingsChanged)
+      }, [])
+
+      useEffect(() => {
+        globalToggleBubble = () => setOpen((prev) => !prev)
+        const onKeyDown = (e) => {
+          if (matchShortcut(e, currentShortcut)) {
+            e.preventDefault()
+            e.stopPropagation()
+            setOpen((prev) => !prev)
+          }
+        }
+        window.addEventListener('keydown', onKeyDown)
+        return () => {
+          window.removeEventListener('keydown', onKeyDown)
+        }
+      }, [currentShortcut])
       const [remoteLogo, setRemoteLogo] = useState(undefined)
       const modelId = state.data?.runningModel?.model
       const modelName = state.data?.runningModel?.displayName
@@ -1439,10 +2397,16 @@ window.__ModuleLoader__.load({
       const latest = useRef(state)
       const [phase, setPhase] = useState('blowing')
       const [open, setOpen] = useState(true)
-      const inflight = useRef(false)
       const alive = useRef(true)
       const timers = useRef([])
       const identity = useRef('')
+      const requestIdRef = useRef(0)
+      const activeSessionIdRef = useRef(activeSessionId)
+      const activeModelRef = useRef(activeModel)
+      const abortCtrl = useRef(null)
+
+      activeSessionIdRef.current = activeSessionId
+      activeModelRef.current = activeModel
 
       const reducedMotion =
         typeof window !== 'undefined' &&
@@ -1466,9 +2430,37 @@ window.__ModuleLoader__.load({
         setState(next)
       }
 
+      const isUsageEqual = (a, b) => {
+        if (a === b) return true
+        if (!a || !b) return false
+        if (a.ok !== b.ok || a.error !== b.error) return false
+        if (a.provider?.id !== b.provider?.id) return false
+        if (a.runningModel?.model !== b.runningModel?.model) return false
+        const wa = a.usage?.windows ?? []
+        const wb = b.usage?.windows ?? []
+        if (wa.length !== wb.length) return false
+        for (let i = 0; i < wa.length; i++) {
+          if (wa[i].key !== wb[i].key || wa[i].percent !== wb[i].percent || wa[i].status !== wb[i].status || wa[i].resetsAt !== wb[i].resetsAt) {
+            return false
+          }
+        }
+        if (a.usage?.balance?.amount !== b.usage?.balance?.amount) return false
+        if (a.poolInfo?.activeEmail !== b.poolInfo?.activeEmail || a.poolInfo?.eligibleCount !== b.poolInfo?.eligibleCount) return false
+        return true
+      }
+
       const show = (next) => {
         const key = keyOf(next)
         if (identity.current === key) {
+          if (
+            latest.current &&
+            !latest.current.loading &&
+            isUsageEqual(latest.current.data, next.data) &&
+            latest.current.error === next.error
+          ) {
+            latest.current.at = next.at
+            return
+          }
           commit(next)
           return
         }
@@ -1496,48 +2488,198 @@ window.__ModuleLoader__.load({
         }, 30)
       }
 
-      const load = useCallback(async (force) => {
-        if (inflight.current === true) return
-        inflight.current = true
+      const load = useCallback(async (force, target) => {
+        const reqId = ++requestIdRef.current
+        if (abortCtrl.current) {
+          try { abortCtrl.current.abort() } catch {}
+          abortCtrl.current = null
+        }
+        const ctrl = new AbortController()
+        abortCtrl.current = ctrl
+
+        const sId = target?.sessionId !== undefined ? target.sessionId : activeSessionIdRef.current
+        const prov = target?.provider !== undefined ? target.provider : activeModelRef.current?.provider
+        const mod = target?.model !== undefined ? target.model : activeModelRef.current?.model
+        const effort = target?.reasoningEffort !== undefined ? target.reasoningEffort : activeModelRef.current?.reasoningEffort
+
+        const params = new URLSearchParams()
+        if (force === true) params.set('refresh', '1')
+        if (typeof sId === 'string' && sId.length > 0) params.set('session', sId)
+        if (typeof prov === 'string' && prov.length > 0 && typeof mod === 'string' && mod.length > 0) {
+          params.set('provider', prov)
+          params.set('model', mod)
+          if (typeof effort === 'string' && effort.length > 0) {
+            params.set('reasoningEffort', effort)
+          }
+        }
+        const url = params.toString() ? `${ROUTE}?${params.toString()}` : ROUTE
+
         commit({ ...latest.current, loading: true })
         try {
-          const response = await fetch(force === true ? `${ROUTE}?refresh=1` : ROUTE, {
+          const response = await fetch(url, {
             cache: 'no-store',
             credentials: 'same-origin',
+            signal: ctrl.signal,
           })
           const payload = await response.json()
-          if (alive.current !== true) return
+          if (alive.current !== true || reqId !== requestIdRef.current) return
           show({
             data: payload,
             error: payload?.ok === false ? payload.error ?? 'probe-failed' : undefined,
             loading: false,
             at: Date.now(),
           })
-        } catch {
-          if (alive.current !== true) return
+        } catch (err) {
+          if (err && err.name === 'AbortError') return
+          if (alive.current !== true || reqId !== requestIdRef.current) return
           show({ ...latest.current, error: 'unreachable', loading: false })
         } finally {
-          inflight.current = false
+          if (abortCtrl.current === ctrl) {
+            abortCtrl.current = null
+          }
         }
       }, [])
 
       useEffect(() => {
         alive.current = true
-        load(false)
+
+        load(false, {
+          sessionId: activeSessionIdRef.current,
+          provider: activeModelRef.current?.provider,
+          model: activeModelRef.current?.model,
+          reasoningEffort: activeModelRef.current?.reasoningEffort,
+        })
+
+        let unsubscribeList
+        let unsubscribeUiSession
+        let unsubscribeModelFace
+        let unsubscribeModelStore
+
+        const bindModelSubs = (sessionId, onUpdate) => {
+          if (unsubscribeModelFace) {
+            try { unsubscribeModelFace() } catch {}
+            unsubscribeModelFace = undefined
+          }
+          if (unsubscribeModelStore) {
+            try { unsubscribeModelStore() } catch {}
+            unsubscribeModelStore = undefined
+          }
+          if (!sessionId) return
+          try {
+            const binding = sessions?.binding?.(sessionId)
+            const face = binding?.session?.projections?.faceOf?.('modelSelection')
+            if (face && typeof face.subscribe === 'function') {
+              unsubscribeModelFace = face.subscribe(onUpdate)
+            }
+          } catch {}
+          try {
+            const dir = md?.directoryFor?.(sessionId)
+            if (dir?.store && typeof dir.store.subscribe === 'function') {
+              unsubscribeModelStore = dir.store.subscribe(onUpdate)
+            }
+          } catch {}
+        }
+
+        const uiSession = getContextService(ctx, 'uiSession')
+        const sessions = getContextService(ctx, 'sessions') ?? uiSession?.sessions
+        const md = getContextService(ctx, 'modelDirectories')
+
+        const isSameModel = (a, b) =>
+          a?.provider === b?.provider &&
+          a?.model === b?.model &&
+          a?.reasoningEffort === b?.reasoningEffort
+
+        const syncSessionAndModel = () => {
+          const nextSessionId = getActiveSessionId(ctx)
+          const nextModel = getSessionModel(ctx, nextSessionId)
+          const sessionChanged = nextSessionId !== activeSessionIdRef.current
+          const modelChanged = !isSameModel(nextModel, activeModelRef.current)
+
+          if (sessionChanged) {
+            activeSessionIdRef.current = nextSessionId
+            bindModelSubs(nextSessionId, syncSessionAndModel)
+          }
+          if (modelChanged) {
+            activeModelRef.current = nextModel
+          }
+
+          if (sessionChanged || modelChanged) {
+            load(false, {
+              sessionId: nextSessionId,
+              provider: nextModel?.provider,
+              model: nextModel?.model,
+              reasoningEffort: nextModel?.reasoningEffort,
+            })
+          }
+        }
+
+        if (typeof props?.useSessions !== 'function') {
+          if (activeSessionIdRef.current) {
+            bindModelSubs(activeSessionIdRef.current, syncSessionAndModel)
+          }
+
+          try {
+            if (sessions?.list && typeof sessions.list.subscribe === 'function') {
+              unsubscribeList = sessions.list.subscribe(syncSessionAndModel)
+            }
+          } catch {}
+
+          try {
+            if (uiSession?.current && typeof uiSession.current.subscribe === 'function') {
+              unsubscribeUiSession = uiSession.current.subscribe(syncSessionAndModel)
+            }
+          } catch {}
+        }
+
         const timer = setInterval(() => {
-          if (document.visibilityState === 'visible') load(false)
+          if (document.visibilityState === 'visible') {
+            load(false, {
+              sessionId: activeSessionIdRef.current,
+              provider: activeModelRef.current?.provider,
+              model: activeModelRef.current?.model,
+              reasoningEffort: activeModelRef.current?.reasoningEffort,
+            })
+          }
         }, REFRESH_MS)
+
         const onVisibility = () => {
-          if (document.visibilityState === 'visible') load(false)
+          if (document.visibilityState === 'visible') {
+            load(false, {
+              sessionId: activeSessionIdRef.current,
+              provider: activeModelRef.current?.provider,
+              model: activeModelRef.current?.model,
+              reasoningEffort: activeModelRef.current?.reasoningEffort,
+            })
+          }
         }
         document.addEventListener('visibilitychange', onVisibility)
+
         return () => {
           alive.current = false
+          if (abortCtrl.current) {
+            try { abortCtrl.current.abort() } catch {}
+            abortCtrl.current = null
+          }
           clearInterval(timer)
           clearTimers()
           document.removeEventListener('visibilitychange', onVisibility)
+          if (unsubscribeList) { try { unsubscribeList() } catch {} }
+          if (unsubscribeUiSession) { try { unsubscribeUiSession() } catch {} }
+          if (unsubscribeModelFace) { try { unsubscribeModelFace() } catch {} }
+          if (unsubscribeModelStore) { try { unsubscribeModelStore() } catch {} }
         }
-      }, [load])
+      }, [ctx, load])
+
+      useEffect(() => {
+        if (typeof props?.useSessions === 'function') {
+          load(false, {
+            sessionId: activeSessionId,
+            provider: activeModel?.provider,
+            model: activeModel?.model,
+            reasoningEffort: activeModel?.reasoningEffort,
+          })
+        }
+      }, [activeSessionInfo, activeSessionId, activeModel?.provider, activeModel?.model, activeModel?.reasoningEffort, load])
 
       const usage = state.data?.usage
       const windows = usage?.windows ?? []
@@ -1578,6 +2720,13 @@ window.__ModuleLoader__.load({
               mark,
               colors: c,
               windows,
+              primaryLeft,
+              corner,
+              shortcut: currentShortcut,
+              dragOffset,
+              onPointerDown,
+              onPointerMove,
+              onPointerUp,
               onExpand: () => {
                 setOpen(true)
                 focusSoon('#ogq-quota-card .ogq-icon-button')
@@ -1588,12 +2737,11 @@ window.__ModuleLoader__.load({
               {
                 className: 'ogq-stack',
                 style: {
-                  position: 'fixed',
-                  right: LAYOUT.edge,
-                  bottom: LAYOUT.edge,
+                  ...computeDockPosition(corner, dragOffset),
                   zIndex: 900,
                   width: `min(${LAYOUT.cardWidth}px, calc(100vw - ${LAYOUT.edge * 2}px))`,
                   pointerEvents: 'auto',
+                  transition: dragOffset ? 'none' : 'transform 160ms ease',
                 },
               },
               h(QuotaCard, {
@@ -1604,6 +2752,19 @@ window.__ModuleLoader__.load({
                 phase,
                 dense,
                 colors: c,
+                theme,
+                corner,
+                shortcut: currentShortcut,
+                updateInfo,
+                onCheckUpdate,
+                dragOffset,
+                onPointerDown,
+                onPointerMove,
+                onPointerUp,
+                onCycleCorner,
+                poolInfo: state.data?.poolInfo,
+                sessionMetrics,
+                sessionId: activeSessionId,
                 onCollapse: () => {
                   setOpen(false)
                   focusSoon('[data-quota-bubble="collapsed"]')
@@ -1614,13 +2775,367 @@ window.__ModuleLoader__.load({
       )
     }
 
-    return {
+    let globalToggleBubble = null
+
+    function PluginSettingsCard(props) {
+      const theme = useTheme()
+      const isDark = theme === 'dark'
+      const [shortcut, setShortcut] = useState(getSavedShortcut)
+      const [corner, setCorner] = useState(getDockCorner)
+      const [recording, setRecording] = useState(false)
+      const [savedNotice, setSavedNotice] = useState(false)
+      const [updateInfo, setUpdateInfo] = useState({ status: 'checking', latestVersion: PLUGIN_VERSION })
+      const [checkingUpdate, setCheckingUpdate] = useState(false)
+
+      useEffect(() => {
+        checkPluginUpdate(false).then((res) => setUpdateInfo(res))
+      }, [])
+
+      const handleCheckUpdate = async () => {
+        setCheckingUpdate(true)
+        const res = await checkPluginUpdate(true)
+        setUpdateInfo(res)
+        setCheckingUpdate(false)
+      }
+
+      const saveShortcut = (newShortcut) => {
+        setSavedShortcut(newShortcut)
+        setShortcut(newShortcut)
+        setSavedNotice(true)
+        setTimeout(() => setSavedNotice(false), 2000)
+      }
+
+      const saveCorner = (newCorner) => {
+        setDockCorner(newCorner)
+        setCorner(newCorner)
+        window.dispatchEvent(new CustomEvent('quota-bubble-settings-changed', { detail: { corner: newCorner } }))
+        setSavedNotice(true)
+        setTimeout(() => setSavedNotice(false), 2000)
+      }
+
+      const PRESETS = ['Alt+Shift+B', 'Alt+Shift+Q', 'Alt+Shift+K', 'Ctrl+Shift+B']
+
+      return h(
+        'div',
+        {
+          className: 'ogq-settings-card',
+          style: {
+            padding: '20px 24px',
+            borderRadius: '16px',
+            background: isDark ? 'rgba(30, 23, 53, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+            border: isDark ? '1px solid rgba(169, 139, 255, 0.25)' : '1px solid rgba(15, 23, 42, 0.1)',
+            boxShadow: isDark ? '0 12px 32px rgba(0,0,0,0.5)' : '0 12px 32px rgba(0,0,0,0.08)',
+            fontFamily: FONT_STACK,
+            color: isDark ? '#FFFFFF' : '#0F172A',
+            maxWidth: '560px',
+            margin: '12px 0',
+          },
+        },
+        h(
+          'div',
+          { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 } },
+          h(
+            'div',
+            { style: { display: 'flex', alignItems: 'center', gap: 10 } },
+            h('span', { style: { fontSize: 20 } }, '🫧'),
+            h(
+              'div',
+              null,
+              h('div', { style: { fontWeight: 800, fontSize: 15 } }, 'Quota Bubble Settings'),
+              h(
+                'div',
+                { style: { display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: isDark ? '#A99CC9' : '#64748B', marginTop: 2 } },
+                h('span', null, `v${PLUGIN_VERSION}`),
+                h('span', null, '·'),
+                updateInfo.status === 'update-available'
+                  ? h(
+                      'a',
+                      {
+                        href: 'https://github.com/Kadomis/dsh-quota-bubble/releases',
+                        target: '_blank',
+                        rel: 'noreferrer',
+                        style: {
+                          color: '#10B981',
+                          fontWeight: 700,
+                          textDecoration: 'none',
+                        },
+                      },
+                      `Update v${updateInfo.latestVersion} available ↗`,
+                    )
+                  : h(
+                      'span',
+                      { style: { color: isDark ? '#34D399' : '#059669', display: 'inline-flex', alignItems: 'center', gap: 4 } },
+                      h('span', { style: { width: 5, height: 5, borderRadius: 999, background: '#10B981' } }),
+                      'Up to date',
+                    ),
+                h(
+                  'button',
+                  {
+                    type: 'button',
+                    onClick: handleCheckUpdate,
+                    disabled: checkingUpdate,
+                    style: {
+                      marginLeft: 6,
+                      padding: '2px 6px',
+                      borderRadius: 4,
+                      fontSize: 10,
+                      border: isDark ? '1px solid rgba(255,255,255,0.15)' : '1px solid #CBD5E1',
+                      background: 'transparent',
+                      color: isDark ? '#A99CC9' : '#64748B',
+                      cursor: checkingUpdate ? 'wait' : 'pointer',
+                    },
+                  },
+                  checkingUpdate ? 'Checking...' : 'Check for updates',
+                ),
+              ),
+            ),
+          ),
+          savedNotice
+            ? h('span', { style: { fontSize: 11, fontWeight: 700, color: '#10B981', background: 'rgba(16,185,129,0.15)', padding: '3px 8px', borderRadius: 999 } }, 'Saved ✓')
+            : null,
+        ),
+        h(
+          'div',
+          { style: { marginBottom: 18, paddingBottom: 16, borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.06)' } },
+          h('div', { style: { fontWeight: 700, fontSize: 13, marginBottom: 4 } }, 'Global Toggle Keyboard Shortcut'),
+          h(
+            'div',
+            { style: { fontSize: 11, color: isDark ? '#A99CC9' : '#64748B', marginBottom: 10, lineHeight: 1.4 } },
+            'Toggle Quota Bubble open or collapsed from anywhere. Uses safe combinations (avoids Cmd+Q / app quit conflicts on macOS).',
+          ),
+          h(
+            'div',
+            { style: { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, flexWrap: 'wrap' } },
+            h(
+              'span',
+              {
+                style: {
+                  padding: '6px 12px',
+                  borderRadius: 8,
+                  fontSize: 12,
+                  fontWeight: 800,
+                  fontFamily: 'monospace',
+                  background: isDark ? 'rgba(169, 139, 255, 0.2)' : 'rgba(99, 102, 241, 0.12)',
+                  border: isDark ? '1px solid rgba(169, 139, 255, 0.4)' : '1px solid rgba(99, 102, 241, 0.3)',
+                  color: isDark ? '#E2D9FF' : '#4338CA',
+                },
+              },
+              shortcut,
+            ),
+            h(
+              'button',
+              {
+                type: 'button',
+                onClick: () => setRecording(!recording),
+                style: {
+                  padding: '6px 12px',
+                  borderRadius: 8,
+                  fontSize: 11,
+                  fontWeight: 650,
+                  cursor: 'pointer',
+                  border: isDark ? '1px solid rgba(255,255,255,0.2)' : '1px solid #CBD5E1',
+                  background: recording ? '#EF4444' : isDark ? 'rgba(255,255,255,0.08)' : '#F1F5F9',
+                  color: recording ? '#FFFFFF' : isDark ? '#FFFFFF' : '#0F172A',
+                },
+              },
+              recording ? 'Press keys now...' : 'Record Custom...',
+            ),
+            recording
+              ? h('input', {
+                  type: 'text',
+                  autoFocus: true,
+                  placeholder: 'Type combination (e.g. Alt+Shift+X)',
+                  style: {
+                    padding: '5px 10px',
+                    borderRadius: 8,
+                    fontSize: 11,
+                    border: '1px solid #6366F1',
+                    background: isDark ? '#140E26' : '#FFFFFF',
+                    color: isDark ? '#FFFFFF' : '#0F172A',
+                    outline: 'none',
+                  },
+                  onKeyDown: (e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    const mods = []
+                    if (e.metaKey) mods.push('Cmd')
+                    if (e.ctrlKey) mods.push('Ctrl')
+                    if (e.altKey) mods.push('Alt')
+                    if (e.shiftKey) mods.push('Shift')
+                    const key = e.key
+                    if (!['Control', 'Alt', 'Shift', 'Meta'].includes(key)) {
+                      const finalKey = key.length === 1 ? key.toUpperCase() : key
+                      const res = [...mods, finalKey].join('+')
+                      saveShortcut(res)
+                      setRecording(false)
+                    }
+                  },
+                })
+              : null,
+          ),
+          h(
+            'div',
+            { style: { display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' } },
+            h('span', { style: { fontSize: 10, fontWeight: 700, color: isDark ? '#7E6F9E' : '#94A3B8', textTransform: 'uppercase' } }, 'Presets:'),
+            PRESETS.map((p) =>
+              h(
+                'button',
+                {
+                  key: p,
+                  type: 'button',
+                  onClick: () => saveShortcut(p),
+                  style: {
+                    padding: '3px 8px',
+                    borderRadius: 6,
+                    fontSize: 10,
+                    fontWeight: 700,
+                    fontFamily: 'monospace',
+                    cursor: 'pointer',
+                    border: shortcut === p ? '1px solid #6366F1' : isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #E2E8F0',
+                    background: shortcut === p ? (isDark ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.15)') : isDark ? 'rgba(255,255,255,0.04)' : '#F8FAFC',
+                    color: shortcut === p ? (isDark ? '#E2D9FF' : '#4338CA') : isDark ? '#A99CC9' : '#64748B',
+                  },
+                },
+                p === DEFAULT_SHORTCUT ? `${p} (Default)` : p,
+              ),
+            ),
+          ),
+        ),
+        h(
+          'div',
+          { style: { marginBottom: 16 } },
+          h('div', { style: { fontWeight: 700, fontSize: 13, marginBottom: 4 } }, 'Default Dock Corner'),
+          h(
+            'div',
+            { style: { fontSize: 11, color: isDark ? '#A99CC9' : '#64748B', marginBottom: 10 } },
+            'Screen corner where the quota bubble docks. You can also drag the bubble or click the corner icon on the card.',
+          ),
+          h(
+            'div',
+            { style: { display: 'flex', gap: 8, flexWrap: 'wrap' } },
+            CORNERS.map((c) =>
+              h(
+                'button',
+                {
+                  key: c,
+                  type: 'button',
+                  onClick: () => saveCorner(c),
+                  style: {
+                    padding: '6px 12px',
+                    borderRadius: 8,
+                    fontSize: 11,
+                    fontWeight: 650,
+                    cursor: 'pointer',
+                    border: corner === c ? '1px solid #6366F1' : isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #E2E8F0',
+                    background: corner === c ? (isDark ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.15)') : isDark ? 'rgba(255,255,255,0.04)' : '#F8FAFC',
+                    color: corner === c ? (isDark ? '#E2D9FF' : '#4338CA') : isDark ? '#A99CC9' : '#64748B',
+                  },
+                },
+                c.replace('-', ' '),
+              ),
+            ),
+          ),
+        ),
+        h(
+          'div',
+          { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 16, paddingTop: 12, borderTop: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.06)' } },
+          h(
+            'button',
+            {
+              type: 'button',
+              onClick: () => {
+                if (typeof globalToggleBubble === 'function') globalToggleBubble()
+              },
+              style: {
+                padding: '6px 12px',
+                borderRadius: 8,
+                fontSize: 11,
+                fontWeight: 700,
+                cursor: 'pointer',
+                border: 'none',
+                background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                color: '#FFFFFF',
+              },
+            },
+            'Toggle Bubble Now',
+          ),
+          h(
+            'button',
+            {
+              type: 'button',
+              onClick: () => {
+                saveShortcut(DEFAULT_SHORTCUT)
+                saveCorner('bottom-right')
+              },
+              style: {
+                padding: '6px 12px',
+                borderRadius: 8,
+                fontSize: 11,
+                fontWeight: 600,
+                cursor: 'pointer',
+                border: 'none',
+                background: 'transparent',
+                color: isDark ? '#A99CC9' : '#64748B',
+                textDecoration: 'underline',
+              },
+            },
+            'Reset to Defaults',
+          ),
+        ),
+      )
+    }
+
+    const plugin = {
       inject: ['slots'],
       apply(ctx) {
-        ctx.slots.inject('shell.overlay', () =>
-          ctx.slots.register({ name: 'shell.overlay', id: 'dsh-quota-bubble', order: 39 }, QuotaBubble),
-        )
+        clientCtx = ctx
+        ctx.slots.inject('shell.overlay', () => {
+          return ctx.slots.register({ name: 'shell.overlay', id: 'dsh-quota-bubble', order: 39 }, QuotaBubble)
+        })
+        try {
+          ctx.slots.inject('plugins.bundle.config', () => {
+            return ctx.slots.register(
+              { name: 'plugins.bundle.config', key: 'dsh-quota-bubble' },
+              PluginSettingsCard,
+            )
+          })
+          ctx.slots.inject('plugins.row.config', () => {
+            return ctx.slots.register(
+              { name: 'plugins.row.config', key: 'dsh-quota-bubble#quota-bubble' },
+              PluginSettingsCard,
+            )
+          })
+        } catch {}
+        try {
+          const shortcuts = getContextService(ctx, 'shortcuts')
+          if (shortcuts && typeof shortcuts.register === 'function') {
+            shortcuts.register({
+              id: 'quota-bubble.toggle',
+              label: 'Toggle Quota Bubble',
+              defaultKeybinding: DEFAULT_SHORTCUT,
+              run: () => {
+                if (typeof globalToggleBubble === 'function') globalToggleBubble()
+              },
+            })
+          }
+        } catch {}
       },
     }
+    plugin.getContextService = getContextService
+    plugin.getActiveSessionId = getActiveSessionId
+    plugin.getActiveSession = getActiveSession
+    plugin.getSessionModel = getSessionModel
+    plugin.QuotaBubble = QuotaBubble
+    plugin.PluginSettingsCard = PluginSettingsCard
+    plugin.DEFAULT_SHORTCUT = DEFAULT_SHORTCUT
+    plugin.matchShortcut = matchShortcut
+    plugin.getSavedShortcut = getSavedShortcut
+    plugin.setSavedShortcut = setSavedShortcut
+    plugin.compareSemver = compareSemver
+    plugin.checkPluginUpdate = checkPluginUpdate
+    plugin.toSentenceCase = toSentenceCase
+    plugin.resetText = resetText
+    plugin.computeSessionRunway = computeSessionRunway
+    return plugin
   },
 })

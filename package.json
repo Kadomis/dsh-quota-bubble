@@ -28,6 +28,12 @@
   "publishConfig": {
     "access": "public"
   },
+  "scripts": {
+    "check": "node scripts/check-tokens.mjs && node scripts/check-antigravity.mjs && node scripts/check-session-switching.mjs",
+    "check:tokens": "node scripts/check-tokens.mjs",
+    "check:antigravity": "node scripts/check-antigravity.mjs",
+    "check:session-switching": "node scripts/check-session-switching.mjs"
+  },
   "exports": {
     ".": "./host2.js",
     "./client": "./client.js",
@@ -47,7 +53,12 @@
     "tokens.json",
     "CHANGELOG.md",
     "docs/token-governance.md",
-    "scripts/check-tokens.mjs"
+    "preview.png",
+    "docs/preview-dark.png",
+    "docs/preview-light.png",
+    "scripts/check-tokens.mjs",
+    "scripts/check-antigravity.mjs",
+    "scripts/check-session-switching.mjs"
   ],
   "dsh": {
     "bundle": {
@@ -57,7 +68,8 @@
       "platform": "web",
       "immediately": true,
       "inject": [
-        "@deepseek-ai/dsh-client-ui-conversation"
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-session"
       ]
     }
   }
