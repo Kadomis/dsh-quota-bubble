@@ -1,6 +1,6 @@
 {
   "name": "dsh-quota-bubble",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Live provider quota and usage bubble for the DeepSeek Harness.",
   "author": "Syzygy",
   "repository": {

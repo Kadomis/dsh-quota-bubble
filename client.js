@@ -554,7 +554,7 @@ window.__ModuleLoader__.load({
 
     // Typography: base 10px, modular scale ratio 1.125 (major second), rounded
     // to half pixels. Styles are named by role, never by size.
-    const PLUGIN_VERSION = '0.1.0'
+    const PLUGIN_VERSION = '0.1.1'
 
     // Runtime model-logo source: the footer model mark is fetched from the
     // LobeHub icon CDN and cached; embedded logos remain the offline fallback.

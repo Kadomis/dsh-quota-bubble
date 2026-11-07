@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.1.1] - 2026-11-07
 
 ### Added
 - **Native Dark Mode & Theme Adaptation**: Added obsidian & dark-violet theme palette (`COLORS.dark`) with automatic detection via `data-ds-dark-theme`, `data-theme="dark"`, and system `prefers-color-scheme: dark` media queries, accompanied by real-time DOM mutation observers.

@@ -92,7 +92,7 @@ The bubble automatically follows the running model and provider in DeepSeek Harn
 ### Via DeepSeek Harness Plugin Manager
 
 ```bash
-plugin_manager install_bundle target="dsh-quota-bubble@0.1.0"
+plugin_manager install_bundle target="dsh-quota-bubble@0.1.1"
 ```
 
 ### Via npm
