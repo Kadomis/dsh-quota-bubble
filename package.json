@@ -5,7 +5,7 @@
   "author": "Syzygy",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Kadomis/dsh-quota-bubble.git"
+    "url": "git+https://github.com/Kadomis/dsh-quota-bubble.git"
   },
   "homepage": "https://github.com/Kadomis/dsh-quota-bubble#readme",
   "bugs": {
